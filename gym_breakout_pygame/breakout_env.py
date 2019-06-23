@@ -34,8 +34,21 @@ class PygameDrawable(ABC):
     def draw_on_screen(self, screen: pygame.Surface):
         """Draw a Pygame object on a given Pygame screen."""
 
+class _AbstractPygameViewer(ABC):
 
-class PygameViewer:
+    @abstractmethod
+    def reset(self, breakout_state: 'State'):
+        pass
+
+    @abstractmethod
+    def render(self):
+        pass
+
+    @abstractmethod
+    def close(self):
+        pass
+
+class PygameViewer(_AbstractPygameViewer):
 
     def __init__(self, breakout_state: 'State'):
         self.state = breakout_state
@@ -57,12 +70,16 @@ class PygameViewer:
         result.add(self.state.brick_grid)
         return result
 
-    def render(self):
+    def render(self, mode="human"):
         self._fill_screen()
         self._draw_score_label()
         self._draw_last_command()
         self._draw_game_objects()
-        pygame.display.update()
+
+        if mode == "human":
+            pygame.display.update()
+        elif mode == "rgb_array":
+            return pygame.surfarray.array3d(self.screen)
 
     def _fill_screen(self):
         self.screen.fill(white)
@@ -80,6 +97,10 @@ class PygameViewer:
     def _draw_game_objects(self):
         for d in self.drawables:
             d.draw_on_screen(self.screen)
+
+    def close(self):
+        pygame.display.quit()
+        pygame.quit()
 
 
 class BreakoutConfiguration(object):
@@ -421,13 +442,13 @@ class DefaultBreakoutConfiguration(BreakoutConfiguration):
 
 
 class Breakout(gym.Env):
-    metadata = {'render.modes': ['human']}
+    metadata = {'render.modes': ['human', 'rgb_array']}
 
     def __init__(self, breakout_config: Optional[BreakoutConfiguration] = None):
 
         self.config = DefaultBreakoutConfiguration() if breakout_config is None else breakout_config
         self.state = State(self.config)
-        self.viewer = PygameViewer(self.state)
+        self.viewer = None  # type: Optional[PygameViewer]
 
         self.observation_space = self.config.observation_space
         self.action_space = self.config.action_space
@@ -443,22 +464,30 @@ class Breakout(gym.Env):
 
     def reset(self):
         self.state = State(self.config)
-        self.viewer.reset(self.state)
+        if self.viewer is not None:
+            self.viewer.reset(self.state)
         return self.state.observe()
 
     def render(self, mode='human'):
-        self.viewer.render()
+        if self.viewer is None:
+            self.viewer = PygameViewer(self.state)
+
+        return self.viewer.render(mode=mode)
+
+    def close(self):
+        if self.viewer is not None:
+            self.viewer.close()
 
 
 if __name__ == '__main__':
     config = BreakoutConfiguration(brick_rows=3, brick_cols=3)
     env = Breakout(config)
     env.reset()
+    env.render(mode="human")
+    input()
     done = False
     while not done:
         time.sleep(0.01)
-        env.render()
+        env.render(mode="human")
         obs, r, done, info = env.step(env.action_space.sample())  # take a random action
     env.close()
-
-
