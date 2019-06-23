@@ -6,7 +6,7 @@ Gym Breakout environment using Pygame.
 
 Install with `pip`:
 
-    pip3 install gym_breakout_pygame==0.0.1rc0
+    pip3 install gym_breakout_pygame==0.0.1a0
     
 Or, install from source:
 
