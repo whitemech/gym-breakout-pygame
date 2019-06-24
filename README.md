@@ -40,3 +40,8 @@ TODO
 ## License
 
 MIT License.
+
+## Credits
+
+The code is largely inspired by [RLGames](https://github.com/iocchi/RLGames.git)
+
