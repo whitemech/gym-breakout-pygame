@@ -16,6 +16,7 @@ from typing import Optional, Set, Tuple, Dict
 import gym
 import numpy as np
 import pygame
+from gym import Space
 from gym.spaces import Dict as DictSpace, Discrete, MultiDiscrete
 
 Position = Tuple[int, int]
@@ -164,20 +165,6 @@ class BreakoutConfiguration(object):
         - ball going left (1,2) straight (0) right (3,4)
         """
         return 10
-
-    @property
-    def observation_space(self):
-        return DictSpace({
-            "ball_x": Discrete(self.n_ball_x),
-            "ball_y": Discrete(self.n_ball_y),
-            "ball_dir": Discrete(self.n_ball_dir),
-            "paddle_x": Discrete(self.n_paddle_x),
-            "bricks_matrix": MultiDiscrete([2] * self.brick_cols * self.brick_rows)
-        })
-
-    @property
-    def action_space(self):
-        return Discrete(len(Command))
 
 
 class Command(Enum):
@@ -451,8 +438,19 @@ class Breakout(gym.Env):
         self.state = State(self.config)
         self.viewer = None  # type: Optional[PygameViewer]
 
-        self.observation_space = self.config.observation_space
-        self.action_space = self.config.action_space
+    @property
+    def observation_space(self) -> Space:
+        return DictSpace({
+            "ball_x": Discrete(self.config.n_ball_x),
+            "ball_y": Discrete(self.config.n_ball_y),
+            "ball_dir": Discrete(self.config.n_ball_dir),
+            "paddle_x": Discrete(self.config.n_paddle_x),
+            "bricks_matrix": MultiDiscrete([2] * self.config.brick_cols * self.config.brick_rows)
+        })
+
+    @property
+    def action_space(self) -> Space:
+        return Discrete(len(Command))
 
     def step(self, action: int):
         command = Command(action)
