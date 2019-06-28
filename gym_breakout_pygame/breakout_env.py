@@ -11,13 +11,12 @@ import math
 import time
 from abc import ABC, abstractmethod
 from enum import Enum
-from time import sleep
 from typing import Optional, Set, Tuple, Dict
-from gym.spaces import Dict as DictSpace, Discrete, MultiDiscrete
 
 import gym
 import numpy as np
 import pygame
+from gym.spaces import Dict as DictSpace, Discrete, MultiDiscrete
 
 Position = Tuple[int, int]
 
@@ -34,6 +33,7 @@ class PygameDrawable(ABC):
     def draw_on_screen(self, screen: pygame.Surface):
         """Draw a Pygame object on a given Pygame screen."""
 
+
 class _AbstractPygameViewer(ABC):
 
     @abstractmethod
@@ -47,6 +47,7 @@ class _AbstractPygameViewer(ABC):
     @abstractmethod
     def close(self):
         pass
+
 
 class PygameViewer(_AbstractPygameViewer):
 
