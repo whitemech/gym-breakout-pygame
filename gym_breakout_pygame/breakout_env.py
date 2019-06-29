@@ -1,10 +1,6 @@
 """
-A Q-learning Agent which plays breakout well (won't lose).
-from https://github.com/lincerely/breakout-Q
-
 The breakout game is based on CoderDojoSV/beginner-python's tutorial
 
-Adapted and updated for teaching purposes
 Luca Iocchi 2017
 """
 import math
@@ -16,7 +12,6 @@ from typing import Optional, Set, Tuple, Dict
 import gym
 import numpy as np
 import pygame
-from gym import Space
 from gym.spaces import Dict as DictSpace, Discrete, MultiDiscrete
 
 Position = Tuple[int, int]
