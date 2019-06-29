@@ -29,7 +29,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    install_requires=["gym", "pygame"],
+    install_requires=["gym", "pygame", "numpy"],
     tests_require=["tox"],
     python_requires='>=3.6',
     license=about['__license__'],

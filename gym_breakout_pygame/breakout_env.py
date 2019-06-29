@@ -1,23 +1,18 @@
 """
-A Q-learning Agent which plays breakout well (won't lose).
-from https://github.com/lincerely/breakout-Q
-
 The breakout game is based on CoderDojoSV/beginner-python's tutorial
 
-Adapted and updated for teaching purposes
 Luca Iocchi 2017
 """
 import math
 import time
 from abc import ABC, abstractmethod
 from enum import Enum
-from time import sleep
 from typing import Optional, Set, Tuple, Dict
-from gym.spaces import Dict as DictSpace, Discrete, MultiDiscrete
 
 import gym
 import numpy as np
 import pygame
+from gym.spaces import Dict as DictSpace, Discrete, MultiDiscrete
 
 Position = Tuple[int, int]
 
@@ -34,6 +29,7 @@ class PygameDrawable(ABC):
     def draw_on_screen(self, screen: pygame.Surface):
         """Draw a Pygame object on a given Pygame screen."""
 
+
 class _AbstractPygameViewer(ABC):
 
     @abstractmethod
@@ -47,6 +43,7 @@ class _AbstractPygameViewer(ABC):
     @abstractmethod
     def close(self):
         pass
+
 
 class PygameViewer(_AbstractPygameViewer):
 
@@ -116,7 +113,8 @@ class BreakoutConfiguration(object):
                  brick_reward: int = 5,
                  ball_radius: int = 10,
                  resolution_x: int = 20,
-                 resolution_y: int = 10):
+                 resolution_y: int = 10,
+                 horizon: Optional[int] = None):
         assert brick_cols >= 3, "The number of columns must be at least three."
         self.brick_rows = brick_rows
         self.brick_cols = brick_cols
@@ -130,6 +128,7 @@ class BreakoutConfiguration(object):
         self.ball_radius = ball_radius
         self.resolution_x = resolution_x
         self.resolution_y = resolution_y
+        self.horizon = horizon if horizon is not None else 300 * (self.brick_cols * self.brick_rows)
 
         self.init_ball_speed_x = 2
         self.init_ball_speed_y = 5
@@ -163,20 +162,6 @@ class BreakoutConfiguration(object):
         - ball going left (1,2) straight (0) right (3,4)
         """
         return 10
-
-    @property
-    def observation_space(self):
-        return DictSpace({
-            "ball_x": Discrete(self.n_ball_x),
-            "ball_y": Discrete(self.n_ball_y),
-            "ball_dir": Discrete(self.n_ball_dir),
-            "paddle_x": Discrete(self.n_paddle_x),
-            "bricks_matrix": MultiDiscrete([2] * self.brick_cols * self.brick_rows)
-        })
-
-    @property
-    def action_space(self):
-        return Discrete(len(Command))
 
 
 class Command(Enum):
@@ -329,6 +314,7 @@ class State(object):
 
         self.last_command = Command.NOP  # type: Command
         self.score = 0
+        self._steps = 0
 
     def reset(self) -> 'State':
         return State(self.config)
@@ -343,8 +329,8 @@ class State(object):
 
     def observe(self) -> Dict:
         """Extract the state observation based on the game configuration."""
-        ball_x = int(self.ball.x) / self.config.resolution_x
-        ball_y = int(self.ball.y) / self.config.resolution_y
+        ball_x = int(self.ball.x) // self.config.resolution_x
+        ball_y = int(self.ball.y) // self.config.resolution_y
 
         ball_dir = 0
         if self.ball.speed_y > 0:  # down
@@ -358,7 +344,7 @@ class State(object):
         elif self.ball.speed_x > 0:  # right
             ball_dir += 4
 
-        paddle_x = int(self.paddle.x) / self.config.resolution_x
+        paddle_x = int(self.paddle.x) // self.config.resolution_x
         bricks_matrix = self.brick_grid.bricksgrid.flatten()
 
         return {
@@ -369,12 +355,14 @@ class State(object):
             "bricks_matrix": bricks_matrix,
         }
 
-    def step(self) -> int:
+    def step(self, command: Command) -> int:
         """
         Check collisions and update the state of the game accordingly.
         :return: the reward resulting from this step.
         """
         reward = 0
+        self._steps += 1
+        self.update(command)
 
         ball = self.ball
         paddle = self.paddle
@@ -432,6 +420,7 @@ class State(object):
     def is_finished(self):
         end1 = self.ball.y > self.config.win_height - self.ball.radius
         end2 = self.brick_grid.is_empty()
+        end3 = self._steps > self.config.horizon * self.config.brick_cols
         return end1 or end2
 
 
@@ -450,16 +439,22 @@ class Breakout(gym.Env):
         self.state = State(self.config)
         self.viewer = None  # type: Optional[PygameViewer]
 
-        self.observation_space = self.config.observation_space
-        self.action_space = self.config.action_space
+        self.observation_space = DictSpace({
+            "ball_x": Discrete(self.config.n_ball_x),
+            "ball_y": Discrete(self.config.n_ball_y),
+            "ball_dir": Discrete(self.config.n_ball_dir),
+            "paddle_x": Discrete(self.config.n_paddle_x),
+            "bricks_matrix": MultiDiscrete([2] * self.config.brick_cols * self.config.brick_rows)
+        })
+
+        self.action_space = Discrete(len(Command))
 
     def step(self, action: int):
         command = Command(action)
-        self.state.update(command)
-        reward = self.state.step()
+        reward = self.state.step(command)
         state = self.state.observe()
         is_finished = self.state.is_finished()
-        info = None
+        info = {}
         return state, reward, is_finished, info
 
     def reset(self):
@@ -484,7 +479,6 @@ if __name__ == '__main__':
     env = Breakout(config)
     env.reset()
     env.render(mode="human")
-    input()
     done = False
     while not done:
         time.sleep(0.01)
