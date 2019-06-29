@@ -1,10 +1,6 @@
 """
-A Q-learning Agent which plays breakout well (won't lose).
-from https://github.com/lincerely/breakout-Q
-
 The breakout game is based on CoderDojoSV/beginner-python's tutorial
 
-Adapted and updated for teaching purposes
 Luca Iocchi 2017
 """
 import math
@@ -16,7 +12,6 @@ from typing import Optional, Set, Tuple, Dict
 import gym
 import numpy as np
 import pygame
-from gym import Space
 from gym.spaces import Dict as DictSpace, Discrete, MultiDiscrete
 
 Position = Tuple[int, int]
@@ -331,8 +326,8 @@ class State(object):
 
     def observe(self) -> Dict:
         """Extract the state observation based on the game configuration."""
-        ball_x = int(self.ball.x) / self.config.resolution_x
-        ball_y = int(self.ball.y) / self.config.resolution_y
+        ball_x = int(self.ball.x) // self.config.resolution_x
+        ball_y = int(self.ball.y) // self.config.resolution_y
 
         ball_dir = 0
         if self.ball.speed_y > 0:  # down
@@ -346,7 +341,7 @@ class State(object):
         elif self.ball.speed_x > 0:  # right
             ball_dir += 4
 
-        paddle_x = int(self.paddle.x) / self.config.resolution_x
+        paddle_x = int(self.paddle.x) // self.config.resolution_x
         bricks_matrix = self.brick_grid.bricksgrid.flatten()
 
         return {
@@ -438,9 +433,7 @@ class Breakout(gym.Env):
         self.state = State(self.config)
         self.viewer = None  # type: Optional[PygameViewer]
 
-    @property
-    def observation_space(self) -> Space:
-        return DictSpace({
+        self.observation_space = DictSpace({
             "ball_x": Discrete(self.config.n_ball_x),
             "ball_y": Discrete(self.config.n_ball_y),
             "ball_dir": Discrete(self.config.n_ball_dir),
@@ -448,9 +441,7 @@ class Breakout(gym.Env):
             "bricks_matrix": MultiDiscrete([2] * self.config.brick_cols * self.config.brick_rows)
         })
 
-    @property
-    def action_space(self) -> Space:
-        return Discrete(len(Command))
+        self.action_space = Discrete(len(Command))
 
     def step(self, action: int):
         command = Command(action)
@@ -458,7 +449,7 @@ class Breakout(gym.Env):
         reward = self.state.step()
         state = self.state.observe()
         is_finished = self.state.is_finished()
-        info = None
+        info = {}
         return state, reward, is_finished, info
 
     def reset(self):
@@ -483,7 +474,6 @@ if __name__ == '__main__':
     env = Breakout(config)
     env.reset()
     env.render(mode="human")
-    input()
     done = False
     while not done:
         time.sleep(0.01)
