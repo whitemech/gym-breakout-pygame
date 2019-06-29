@@ -10,6 +10,7 @@ jupyter = "*"
 keras = "*"
 tensorflow-gpu = "*"
 keras-rl = "*"
+tensorflow-cpu = "*"
 
 [packages]
 gym = "*"
