@@ -449,7 +449,7 @@ class Breakout(gym.Env):
         reward = self.state.step()
         state = self.state.observe()
         is_finished = self.state.is_finished()
-        info = None
+        info = {}
         return state, reward, is_finished, info
 
     def reset(self):
