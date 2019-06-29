@@ -113,7 +113,8 @@ class BreakoutConfiguration(object):
                  brick_reward: int = 5,
                  ball_radius: int = 10,
                  resolution_x: int = 20,
-                 resolution_y: int = 10):
+                 resolution_y: int = 10,
+                 horizon: Optional[int] = None):
         assert brick_cols >= 3, "The number of columns must be at least three."
         self.brick_rows = brick_rows
         self.brick_cols = brick_cols
@@ -127,6 +128,7 @@ class BreakoutConfiguration(object):
         self.ball_radius = ball_radius
         self.resolution_x = resolution_x
         self.resolution_y = resolution_y
+        self.horizon = horizon if horizon is not None else 300 * (self.brick_cols * self.brick_rows)
 
         self.init_ball_speed_x = 2
         self.init_ball_speed_y = 5
@@ -312,6 +314,7 @@ class State(object):
 
         self.last_command = Command.NOP  # type: Command
         self.score = 0
+        self._steps = 0
 
     def reset(self) -> 'State':
         return State(self.config)
@@ -352,12 +355,14 @@ class State(object):
             "bricks_matrix": bricks_matrix,
         }
 
-    def step(self) -> int:
+    def step(self, command: Command) -> int:
         """
         Check collisions and update the state of the game accordingly.
         :return: the reward resulting from this step.
         """
         reward = 0
+        self._steps += 1
+        self.update(command)
 
         ball = self.ball
         paddle = self.paddle
@@ -415,6 +420,7 @@ class State(object):
     def is_finished(self):
         end1 = self.ball.y > self.config.win_height - self.ball.radius
         end2 = self.brick_grid.is_empty()
+        end3 = self._steps > self.config.horizon * self.config.brick_cols
         return end1 or end2
 
 
@@ -445,8 +451,7 @@ class Breakout(gym.Env):
 
     def step(self, action: int):
         command = Command(action)
-        self.state.update(command)
-        reward = self.state.step()
+        reward = self.state.step(command)
         state = self.state.observe()
         is_finished = self.state.is_finished()
         info = {}
