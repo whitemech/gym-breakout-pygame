@@ -154,7 +154,7 @@ class BreakoutConfiguration(object):
 
     @property
     def n_ball_y(self):
-        return self.win_width // self.resolution_y + 1
+        return self.win_height // self.resolution_y + 1
 
     @property
     def n_ball_dir(self):

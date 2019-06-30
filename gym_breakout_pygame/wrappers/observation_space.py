@@ -19,13 +19,14 @@ class BreakoutN(gym.ObservationWrapper):
 
     """
 
-    def __init__(self, breakout_config: Optional[BreakoutConfiguration] = None, encode=True):
+    def __init__(self, breakout_config: Optional[BreakoutConfiguration] = None, encode: bool = False):
         super().__init__(Breakout(breakout_config))
 
         self._encode = encode
         self._wrapped_obs_space = self._wrap_obs_space(encode=False)
+        self._encoded_wrapped_obs_space = self._wrap_obs_space(encode=True)
 
-        self.observation_space = self._wrap_obs_space(encode=self._encode)
+        self.observation_space = self._wrapped_obs_space if not encode else self._encoded_wrapped_obs_space
 
     def _wrap_obs_space(self, encode=False):
         obs_space = self.env.observation_space
@@ -51,6 +52,7 @@ class BreakoutN(gym.ObservationWrapper):
 
         if self._encode:
             wrapped_obs = encode([paddle_x, ball_x, ball_y, ball_dir], self._wrapped_obs_space.nvec)
+            assert wrapped_obs < self._encoded_wrapped_obs_space.n
             return wrapped_obs
         else:
             return np.asarray([paddle_x, ball_x, ball_y, ball_dir])
