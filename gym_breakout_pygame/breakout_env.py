@@ -76,7 +76,9 @@ class PygameViewer(_AbstractPygameViewer):
         if mode == "human":
             pygame.display.update()
         elif mode == "rgb_array":
-            return pygame.surfarray.array3d(self.screen)
+            screen = pygame.surfarray.array3d(self.screen)
+            # swap width with height
+            return screen.swapaxes(0, 1)
 
     def _fill_screen(self):
         self.screen.fill(white)
@@ -485,3 +487,4 @@ if __name__ == '__main__':
         env.render(mode="human")
         obs, r, done, info = env.step(env.action_space.sample())  # take a random action
     env.close()
+
