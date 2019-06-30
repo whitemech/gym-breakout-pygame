@@ -12,7 +12,7 @@ from typing import Optional, Set, Tuple, Dict
 import gym
 import numpy as np
 import pygame
-from gym.spaces import Dict as DictSpace, Discrete, MultiDiscrete
+from gym.spaces import Dict as DictSpace, Discrete, MultiDiscrete, MultiBinary
 
 Position = Tuple[int, int]
 
@@ -33,7 +33,7 @@ class PygameDrawable(ABC):
 class _AbstractPygameViewer(ABC):
 
     @abstractmethod
-    def reset(self, breakout_state: 'State'):
+    def reset(self, breakout_state: 'BreakoutState'):
         pass
 
     @abstractmethod
@@ -47,7 +47,7 @@ class _AbstractPygameViewer(ABC):
 
 class PygameViewer(_AbstractPygameViewer):
 
-    def __init__(self, breakout_state: 'State'):
+    def __init__(self, breakout_state: 'BreakoutState'):
         self.state = breakout_state
 
         pygame.init()
@@ -56,7 +56,7 @@ class PygameViewer(_AbstractPygameViewer):
         self.myfont = pygame.font.SysFont("Arial", 30)
         self.drawables = self._init_drawables()  # type: Set[PygameDrawable]
 
-    def reset(self, breakout_state: 'State'):
+    def reset(self, breakout_state: 'BreakoutState'):
         self.state = breakout_state
         self.drawables = self._init_drawables()
 
@@ -252,6 +252,21 @@ class Ball(PygameDrawable):
     def radius(self):
         return self.config.ball_radius
 
+    @property
+    def dir(self):
+        ball_dir = 0
+        if self.speed_y > 0:  # down
+            ball_dir += 5
+        if self.speed_x < -2.5:  # quick-left
+            ball_dir += 1
+        elif self.speed_x < 0:  # left
+            ball_dir += 2
+        elif self.speed_x > 2.5:  # quick-right
+            ball_dir += 3
+        elif self.speed_x > 0:  # right
+            ball_dir += 4
+        return ball_dir
+
     def draw_on_screen(self, screen: pygame.Surface):
         pygame.draw.circle(screen, orange, [int(self.x), int(self.y)], self.radius, 0)
 
@@ -301,7 +316,7 @@ class Paddle(PygameDrawable):
             self.x = self.config.win_width - self.width
 
 
-class State(object):
+class BreakoutState(object):
 
     def __init__(self, breakout_configuration: BreakoutConfiguration):
         self.config = breakout_configuration
@@ -318,8 +333,8 @@ class State(object):
         self.score = 0
         self._steps = 0
 
-    def reset(self) -> 'State':
-        return State(self.config)
+    def reset(self) -> 'BreakoutState':
+        return BreakoutState(self.config)
 
     def update(self, command: Command):
         self.paddle.update(command)
@@ -330,22 +345,11 @@ class State(object):
         self.brick_grid.remove_brick_at_position(position)
 
     def observe(self) -> Dict:
+
         """Extract the state observation based on the game configuration."""
         ball_x = int(self.ball.x) // self.config.resolution_x
         ball_y = int(self.ball.y) // self.config.resolution_y
-
-        ball_dir = 0
-        if self.ball.speed_y > 0:  # down
-            ball_dir += 5
-        if self.ball.speed_x < -2.5:  # quick-left
-            ball_dir += 1
-        elif self.ball.speed_x < 0:  # left
-            ball_dir += 2
-        elif self.ball.speed_x > 2.5:  # quick-right
-            ball_dir += 3
-        elif self.ball.speed_x > 0:  # right
-            ball_dir += 4
-
+        ball_dir = self.ball.dir
         paddle_x = int(self.paddle.x) // self.config.resolution_x
         bricks_matrix = self.brick_grid.bricksgrid.flatten()
 
@@ -432,38 +436,38 @@ class DefaultBreakoutConfiguration(BreakoutConfiguration):
         super().__init__()
 
 
-class Breakout(gym.Env):
+class Breakout(gym.Env, ABC):
+    """A generic Breakout env. The feature space must be define in subclasses."""
+
     metadata = {'render.modes': ['human', 'rgb_array']}
 
     def __init__(self, breakout_config: Optional[BreakoutConfiguration] = None):
 
         self.config = DefaultBreakoutConfiguration() if breakout_config is None else breakout_config
-        self.state = State(self.config)
+        self.state = BreakoutState(self.config)
         self.viewer = None  # type: Optional[PygameViewer]
 
-        self.observation_space = DictSpace({
-            "ball_x": Discrete(self.config.n_ball_x),
-            "ball_y": Discrete(self.config.n_ball_y),
-            "ball_dir": Discrete(self.config.n_ball_dir),
-            "paddle_x": Discrete(self.config.n_paddle_x),
-            "bricks_matrix": MultiDiscrete([2] * self.config.brick_cols * self.config.brick_rows)
-        })
-
         self.action_space = Discrete(len(Command))
+
+        self._paddle_x_space = Discrete(self.config.n_paddle_x)
+        self._ball_x_space = Discrete(self.config.n_ball_x)
+        self._ball_y_space = Discrete(self.config.n_ball_y)
+        self._ball_dir_space = Discrete(self.config.n_ball_dir)
+        self._bricks_matrix_space = MultiBinary((self.config.brick_rows, self.config.brick_cols))
 
     def step(self, action: int):
         command = Command(action)
         reward = self.state.step(command)
-        state = self.state.observe()
+        obs = self._observation(self.state)
         is_finished = self.state.is_finished()
         info = {}
-        return state, reward, is_finished, info
+        return obs, reward, is_finished, info
 
     def reset(self):
-        self.state = State(self.config)
+        self.state = BreakoutState(self.config)
         if self.viewer is not None:
             self.viewer.reset(self.state)
-        return self.state.observe()
+        return self._observation(self.state)
 
     def render(self, mode='human'):
         if self.viewer is None:
@@ -474,6 +478,14 @@ class Breakout(gym.Env):
     def close(self):
         if self.viewer is not None:
             self.viewer.close()
+
+    @abstractmethod
+    def observe(self, state: BreakoutState):
+        """
+        Extract observation from the state of the game.
+        :param state: the state of the game
+        :return: an instance of a gym.Space
+        """
 
 
 if __name__ == '__main__':
