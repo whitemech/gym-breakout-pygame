@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 The breakout game is based on CoderDojoSV/beginner-python's tutorial
 
@@ -344,9 +346,9 @@ class BreakoutState(object):
     def remove_brick_at_position(self, position: Position):
         self.brick_grid.remove_brick_at_position(position)
 
-    def observe(self) -> Dict:
-
+    def to_dict(self) -> Dict:
         """Extract the state observation based on the game configuration."""
+
         ball_x = int(self.ball.x) // self.config.resolution_x
         ball_y = int(self.ball.y) // self.config.resolution_y
         ball_dir = self.ball.dir
@@ -427,7 +429,7 @@ class BreakoutState(object):
         end1 = self.ball.y > self.config.win_height - self.ball.radius
         end2 = self.brick_grid.is_empty()
         end3 = self._steps > self.config.horizon * self.config.brick_cols
-        return end1 or end2
+        return end1 or end2 or end3
 
 
 class DefaultBreakoutConfiguration(BreakoutConfiguration):
@@ -458,7 +460,7 @@ class Breakout(gym.Env, ABC):
     def step(self, action: int):
         command = Command(action)
         reward = self.state.step(command)
-        obs = self._observation(self.state)
+        obs = self.observe(self.state)
         is_finished = self.state.is_finished()
         info = {}
         return obs, reward, is_finished, info
@@ -467,7 +469,7 @@ class Breakout(gym.Env, ABC):
         self.state = BreakoutState(self.config)
         if self.viewer is not None:
             self.viewer.reset(self.state)
-        return self._observation(self.state)
+        return self.observe(self.state)
 
     def render(self, mode='human'):
         if self.viewer is None:
@@ -486,17 +488,3 @@ class Breakout(gym.Env, ABC):
         :param state: the state of the game
         :return: an instance of a gym.Space
         """
-
-
-if __name__ == '__main__':
-    config = BreakoutConfiguration(brick_rows=3, brick_cols=3)
-    env = Breakout(config)
-    env.reset()
-    env.render(mode="human")
-    done = False
-    while not done:
-        time.sleep(0.01)
-        env.render(mode="human")
-        obs, r, done, info = env.step(env.action_space.sample())  # take a random action
-    env.close()
-

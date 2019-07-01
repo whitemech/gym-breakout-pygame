@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 __title__ = 'gym_breakout_pygame'
 __description__ = 'Gym Breakout environment using Pygame'
 __url__ = 'https://github.com/sapienza-rl/gym-breakout-pygame.git'
