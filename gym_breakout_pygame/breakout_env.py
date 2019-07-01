@@ -6,7 +6,6 @@ The breakout game is based on CoderDojoSV/beginner-python's tutorial
 Luca Iocchi 2017
 """
 import math
-import time
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Optional, Set, Tuple, Dict
@@ -14,7 +13,7 @@ from typing import Optional, Set, Tuple, Dict
 import gym
 import numpy as np
 import pygame
-from gym.spaces import Dict as DictSpace, Discrete, MultiDiscrete, MultiBinary
+from gym.spaces import Discrete, MultiBinary
 
 Position = Tuple[int, int]
 
