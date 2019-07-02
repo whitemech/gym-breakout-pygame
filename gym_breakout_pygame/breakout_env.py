@@ -352,7 +352,7 @@ class BreakoutState(object):
         ball_y = int(self.ball.y) // self.config.resolution_y
         ball_dir = self.ball.dir
         paddle_x = int(self.paddle.x) // self.config.resolution_x
-        bricks_matrix = self.brick_grid.bricksgrid.flatten()
+        bricks_matrix = self.brick_grid.bricksgrid
 
         return {
             "ball_x": ball_x,
