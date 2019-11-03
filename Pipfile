@@ -10,6 +10,12 @@ jupyter = "*"
 keras = "*"
 tensorflow-gpu = "==1.14.0"
 keras-rl = "*"
+mkdocs = "*"
+markdown-include = "*"
+flake8 = "*"
+flake8-docstrings = "*"
+pydocstyle = "==3.0.0"
+mypy = "*"
 
 [packages]
 gym = "*"

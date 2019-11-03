@@ -1,5 +1,14 @@
-include README.md LICENSE Pipfile Pipfile.lock
+include Pipfile Pipfile.lock
+include AUTHORS.md
+include CONTRIBUTING.md
+include HISTORY.md
+include LICENSE
+include README.md
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
 
 recursive-include gym_breakout_pygame *
 recursive-include tests *.py
-recursive-include docs *
+recursive-include docs *.md *.jpg *.png *.gif
+
