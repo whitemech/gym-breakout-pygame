@@ -167,6 +167,14 @@ class BreakoutConfiguration(object):
         return 10
 
     @property
+    def n_ball_x_speed(self):
+        return 5
+
+    @property
+    def n_ball_y_speed(self):
+        return 2
+
+    @property
     def brick_rows(self):
         return self._brick_rows
 
@@ -306,6 +314,28 @@ class Ball(PygameDrawable):
         return self.config._ball_radius
 
     @property
+    def speed_x_norm(self) -> int:
+        if self.speed_x < -2.5:
+            return 0
+        elif -2.5 <= self.speed_x < 0:
+            return 1
+        elif self.speed_x == 0:
+            return 2
+        elif 0 < self.speed_x < 2.5:
+            return 3
+        elif 2.5 <= self.speed_x:
+            return 4
+        else:
+            raise ValueError("Speed x not recognized.")
+
+    @property
+    def speed_y_norm(self) -> int:
+        if self.speed_y <= 0:
+            return 0
+        else:
+            return 1
+
+    @property
     def dir(self):
         ball_dir = 0
         if self.speed_y > 0:  # down
@@ -402,15 +432,17 @@ class BreakoutState(object):
 
         ball_x = int(self.ball.x) // self.config._resolution_x
         ball_y = int(self.ball.y) // self.config._resolution_y
-        ball_dir = self.ball.dir
+        ball_x_speed = self.ball.speed_x_norm
+        ball_y_speed = self.ball.speed_y_norm
         paddle_x = int(self.paddle.x) // self.config._resolution_x
         bricks_matrix = self.brick_grid.bricksgrid
 
         return {
+            "paddle_x": paddle_x,
             "ball_x": ball_x,
             "ball_y": ball_y,
-            "ball_dir": ball_dir,
-            "paddle_x": paddle_x,
+            "ball_x_speed": ball_y_speed,
+            "ball_y_speed": ball_x_speed,
             "bricks_matrix": bricks_matrix,
         }
 
@@ -500,6 +532,8 @@ class Breakout(gym.Env, ABC):
         self._paddle_x_space = Discrete(self.config.n_paddle_x)
         self._ball_x_space = Discrete(self.config.n_ball_x)
         self._ball_y_space = Discrete(self.config.n_ball_y)
+        self._ball_x_speed_space = Discrete(self.config.n_ball_x_speed)
+        self._ball_y_speed_space = Discrete(self.config.n_ball_y_speed)
         self._ball_dir_space = Discrete(self.config.n_ball_dir)
         self._bricks_matrix_space = MultiBinary((self.config._brick_rows, self.config._brick_cols))
 

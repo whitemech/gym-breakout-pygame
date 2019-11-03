@@ -14,7 +14,8 @@ class BreakoutDictSpace(BreakoutSkipper):
     - Paddle x coordinate (Discrete)
     - Ball x coordinate (Discrete)
     - Ball y coordinate (Discrete)
-    - Ball direction (Discrete)
+    - Ball horizontal speed (Discrete)
+    - Ball vertical speed (Discrete)
     - Brick matrix (MultiBinary)
     """
 
@@ -24,7 +25,8 @@ class BreakoutDictSpace(BreakoutSkipper):
             "paddle_x": self._paddle_x_space,
             "ball_x": self._ball_x_space,
             "ball_y": self._ball_y_space,
-            "ball_dir": self._ball_dir_space,
+            "ball_x_speed": self._ball_x_speed_space,
+            "ball_y_speed": self._ball_y_speed_space,
             "bricks_matrix": self._bricks_matrix_space,
         })
 
