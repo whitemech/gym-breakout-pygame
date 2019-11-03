@@ -31,7 +31,8 @@ class BreakoutNMultiDiscrete(BreakoutSkipper):
             self._paddle_x_space.n,
             self._ball_x_space.n,
             self._ball_y_space.n,
-            self._ball_dir_space.n
+            self._ball_x_speed_space.n,
+            self._ball_y_speed_space.n
         ))
 
     @classmethod
@@ -57,7 +58,8 @@ class BreakoutNDiscrete(BreakoutSkipper):
 
     def __init__(self, config: Optional[BreakoutConfiguration] = None):
         super().__init__(config)
-        self.observation_space = Discrete(config.n_paddle_x * config.n_ball_x * config.n_ball_y * config.n_ball_dir)
+        self.observation_space = Discrete(config.n_paddle_x * config.n_ball_x * config.n_ball_y
+                                          * config.n_ball_x_speed * config.n_ball_y_speed)
 
     @classmethod
     def observe(cls, state: BreakoutState):

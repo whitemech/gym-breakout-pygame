@@ -16,6 +16,7 @@ flake8 = "*"
 flake8-docstrings = "*"
 pydocstyle = "==3.0.0"
 mypy = "*"
+baselines = {editable = true,path = "./examples/baselines"}
 
 [packages]
 gym = "*"
