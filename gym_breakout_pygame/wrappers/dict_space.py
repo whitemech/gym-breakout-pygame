@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """Breakout environments using a "dict" state space."""
+
 from gym.spaces import Dict
 
-from gym_breakout_pygame.breakout_env import Breakout, BreakoutState
+from gym_breakout_pygame.breakout_env import BreakoutState
+from gym_breakout_pygame.wrappers.skipper import BreakoutSkipper
 
 
-class BreakoutDictSpace(Breakout):
+class BreakoutDictSpace(BreakoutSkipper):
     """A Breakout environment with a dictionary state space.
     The components of the space are:
     - Paddle x coordinate (Discrete)
@@ -27,4 +29,10 @@ class BreakoutDictSpace(Breakout):
         })
 
     def observe(self, state: BreakoutState):
+        """Observe the state."""
         return state.to_dict()
+
+    @classmethod
+    def compare(cls, obs1, obs2) -> bool:
+        """Compare two observations."""
+        return obs1 == obs2

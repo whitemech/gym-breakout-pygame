@@ -119,19 +119,19 @@ class BreakoutConfiguration(object):
                  resolution_y: int = 10,
                  horizon: Optional[int] = None):
         assert brick_cols >= 3, "The number of columns must be at least three."
-        self.brick_rows = brick_rows
-        self.brick_cols = brick_cols
-        self.paddle_width = paddle_width
-        self.paddle_height = paddle_height
-        self.paddle_speed = paddle_speed
-        self.brick_width = brick_width
-        self.brick_height = brick_height
-        self.brick_xdistance = brick_xdistance
-        self.brick_reward = brick_reward
-        self.ball_radius = ball_radius
-        self.resolution_x = resolution_x
-        self.resolution_y = resolution_y
-        self.horizon = horizon if horizon is not None else 300 * (self.brick_cols * self.brick_rows)
+        self._brick_rows = brick_rows
+        self._brick_cols = brick_cols
+        self._paddle_width = paddle_width
+        self._paddle_height = paddle_height
+        self._paddle_speed = paddle_speed
+        self._brick_width = brick_width
+        self._brick_height = brick_height
+        self._brick_xdistance = brick_xdistance
+        self._brick_reward = brick_reward
+        self._ball_radius = ball_radius
+        self._resolution_x = resolution_x
+        self._resolution_y = resolution_y
+        self._horizon = horizon if horizon is not None else 300 * (self._brick_cols * self._brick_rows)
 
         self.init_ball_speed_x = 2
         self.init_ball_speed_y = 5
@@ -139,7 +139,7 @@ class BreakoutConfiguration(object):
 
     @property
     def win_width(self):
-        return int((self.brick_width + self.brick_xdistance) * self.brick_cols + self.brick_xdistance)
+        return int((self._brick_width + self._brick_xdistance) * self._brick_cols + self._brick_xdistance)
 
     @property
     def win_height(self):
@@ -147,15 +147,15 @@ class BreakoutConfiguration(object):
 
     @property
     def n_ball_x(self):
-        return self.win_width // self.resolution_x + 1
+        return self.win_width // self._resolution_x + 1
 
     @property
     def n_paddle_x(self):
-        return self.win_width // self.resolution_x + 1
+        return self.win_width // self._resolution_x + 1
 
     @property
     def n_ball_y(self):
-        return self.win_height // self.resolution_y + 1
+        return self.win_height // self._resolution_y + 1
 
     @property
     def n_ball_dir(self):
@@ -165,6 +165,58 @@ class BreakoutConfiguration(object):
         - ball going left (1,2) straight (0) right (3,4)
         """
         return 10
+
+    @property
+    def brick_rows(self):
+        return self._brick_rows
+
+    @property
+    def brick_cols(self):
+        return self._brick_cols
+
+    @property
+    def paddle_width(self):
+        return self._paddle_width
+
+    @property
+    def paddle_height(self):
+        return self._paddle_height
+
+    @property
+    def paddle_speed(self):
+        return self._paddle_speed
+
+    @property
+    def brick_width(self):
+        return self._brick_width
+
+    @property
+    def brick_height(self):
+        return self._brick_height
+
+    @property
+    def brick_xdistance(self):
+        return self._brick_xdistance
+
+    @property
+    def brick_reward(self):
+        return self._brick_reward
+
+    @property
+    def ball_radius(self):
+        return self._ball_radius
+
+    @property
+    def resolution_x(self):
+        return self._resolution_x
+
+    @property
+    def resolution_y(self):
+        return self._resolution_y
+
+    @property
+    def horizon(self) -> int:
+        return self._horizon
 
 
 class Command(Enum):
@@ -243,7 +295,7 @@ class Ball(PygameDrawable):
         self.config = breakout_config
 
         _initial_ball_x = self.config.win_width // 2
-        _initial_ball_y = self.config.win_height - 100 - self.config.ball_radius
+        _initial_ball_y = self.config.win_height - 100 - self.config._ball_radius
         self.x = _initial_ball_x
         self.y = _initial_ball_y
         self.speed_x = self.config.init_ball_speed_x
@@ -251,7 +303,7 @@ class Ball(PygameDrawable):
 
     @property
     def radius(self):
-        return self.config.ball_radius
+        return self.config._ball_radius
 
     @property
     def dir(self):
@@ -288,15 +340,15 @@ class Paddle(PygameDrawable):
 
     @property
     def width(self):
-        return self.config.paddle_width
+        return self.config._paddle_width
 
     @property
     def height(self):
-        return self.config.paddle_height
+        return self.config._paddle_height
 
     @property
     def speed(self):
-        return self.config.paddle_speed
+        return self.config._paddle_speed
 
     def draw_on_screen(self, screen: pygame.Surface):
         pygame.draw.rect(screen, grey, [self.x, self.y, self.width, self.height], 0)
@@ -324,11 +376,11 @@ class BreakoutState(object):
 
         self.ball = Ball(self.config)
         self.paddle = Paddle(self.config)
-        self.brick_grid = BrickGrid(self.config.brick_cols,
-                                    self.config.brick_rows,
-                                    self.config.brick_width,
-                                    self.config.brick_height,
-                                    self.config.brick_xdistance)
+        self.brick_grid = BrickGrid(self.config._brick_cols,
+                                    self.config._brick_rows,
+                                    self.config._brick_width,
+                                    self.config._brick_height,
+                                    self.config._brick_xdistance)
 
         self.last_command = Command.NOP  # type: Command
         self.score = 0
@@ -348,10 +400,10 @@ class BreakoutState(object):
     def to_dict(self) -> Dict:
         """Extract the state observation based on the game configuration."""
 
-        ball_x = int(self.ball.x) // self.config.resolution_x
-        ball_y = int(self.ball.y) // self.config.resolution_y
+        ball_x = int(self.ball.x) // self.config._resolution_x
+        ball_y = int(self.ball.y) // self.config._resolution_y
         ball_dir = self.ball.dir
-        paddle_x = int(self.paddle.x) // self.config.resolution_x
+        paddle_x = int(self.paddle.x) // self.config._resolution_x
         bricks_matrix = self.brick_grid.bricksgrid
 
         return {
@@ -365,6 +417,7 @@ class BreakoutState(object):
     def step(self, command: Command) -> int:
         """
         Check collisions and update the state of the game accordingly.
+
         :return: the reward resulting from this step.
         """
         reward = 0
@@ -416,10 +469,10 @@ class BreakoutState(object):
 
         for brick in self.brick_grid.bricks.values():
             if brick.rect.colliderect(ball_rect):
-                self.score += self.config.brick_reward
+                self.score += self.config._brick_reward
                 self.remove_brick_at_position((brick.i, brick.j))
                 ball.speed_y = - ball.speed_y
-                reward += self.config.brick_reward
+                reward += self.config._brick_reward
                 break
 
         return reward
@@ -427,14 +480,8 @@ class BreakoutState(object):
     def is_finished(self):
         end1 = self.ball.y > self.config.win_height - self.ball.radius
         end2 = self.brick_grid.is_empty()
-        end3 = self._steps > self.config.horizon * self.config.brick_cols
+        end3 = self._steps > self.config.horizon
         return end1 or end2 or end3
-
-
-class DefaultBreakoutConfiguration(BreakoutConfiguration):
-
-    def __init__(self):
-        super().__init__()
 
 
 class Breakout(gym.Env, ABC):
@@ -444,7 +491,7 @@ class Breakout(gym.Env, ABC):
 
     def __init__(self, breakout_config: Optional[BreakoutConfiguration] = None):
 
-        self.config = DefaultBreakoutConfiguration() if breakout_config is None else breakout_config
+        self.config = BreakoutConfiguration() if breakout_config is None else breakout_config
         self.state = BreakoutState(self.config)
         self.viewer = None  # type: Optional[PygameViewer]
 
@@ -454,7 +501,7 @@ class Breakout(gym.Env, ABC):
         self._ball_x_space = Discrete(self.config.n_ball_x)
         self._ball_y_space = Discrete(self.config.n_ball_y)
         self._ball_dir_space = Discrete(self.config.n_ball_dir)
-        self._bricks_matrix_space = MultiBinary((self.config.brick_rows, self.config.brick_cols))
+        self._bricks_matrix_space = MultiBinary((self.config._brick_rows, self.config._brick_cols))
 
     def step(self, action: int):
         command = Command(action)

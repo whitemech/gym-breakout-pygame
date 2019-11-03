@@ -12,9 +12,10 @@ from gym.spaces import Discrete, MultiDiscrete
 
 from gym_breakout_pygame.breakout_env import Breakout, BreakoutConfiguration, BreakoutState
 from gym_breakout_pygame.utils import encode
+from gym_breakout_pygame.wrappers.skipper import BreakoutSkipper
 
 
-class BreakoutNMultiDiscrete(Breakout):
+class BreakoutNMultiDiscrete(BreakoutSkipper):
     """
     Breakout env with a gym.MultiDiscrete observation space composed by:
     - paddle x position
@@ -34,6 +35,10 @@ class BreakoutNMultiDiscrete(Breakout):
         ))
 
     @classmethod
+    def compare(cls, obs1: np.ndarray, obs2: np.ndarray):
+        return (obs1 == obs2).all()
+
+    @classmethod
     def observe(cls, state: BreakoutState):
         paddle_x = state.paddle.x // state.config.resolution_x
         ball_x = state.ball.x // state.config.resolution_x
@@ -44,7 +49,7 @@ class BreakoutNMultiDiscrete(Breakout):
         return np.asarray(obs)
 
 
-class BreakoutNDiscrete(Breakout):
+class BreakoutNDiscrete(BreakoutSkipper):
     """
     The same of BreakoutNMultiDiscrete, but the observation space encoded in one integer.
     """
@@ -58,3 +63,7 @@ class BreakoutNDiscrete(Breakout):
         obs = BreakoutNMultiDiscrete.observe(state)
         dims = [state.config.n_paddle_x, state.config.n_ball_x, state.config.n_ball_y, state.config.n_ball_dir]
         return encode(list(obs), dims)
+
+    @classmethod
+    def compare(cls, obs1, obs2):
+        pass
