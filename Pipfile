@@ -8,9 +8,15 @@ tox = "*"
 ipython = "*"
 jupyter = "*"
 keras = "*"
-tensorflow-gpu = "*"
+tensorflow-gpu = "==1.14.0"
 keras-rl = "*"
-tensorflow-cpu = "*"
+mkdocs = "*"
+markdown-include = "*"
+flake8 = "*"
+flake8-docstrings = "*"
+pydocstyle = "==3.0.0"
+mypy = "*"
+baselines = {editable = true,path = "./examples/baselines"}
 
 [packages]
 gym = "*"
@@ -18,4 +24,4 @@ pygame = "*"
 numpy = "*"
 
 [requires]
-python_version = ">=3.6"
+python_version = "3"

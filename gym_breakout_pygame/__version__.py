@@ -3,8 +3,7 @@
 __title__ = 'gym_breakout_pygame'
 __description__ = 'Gym Breakout environment using Pygame'
 __url__ = 'https://github.com/sapienza-rl/gym-breakout-pygame.git'
-__version__ = '0.0.1a2'
-__build__ = 0x000001
+__version__ = '0.1.0'
 __author__ = 'Marco Favorito, Luca Iocchi'
 __author_email__ = 'favorito@diag.uniroma1.it, iocchi@diag.uniroma1.it'
 __license__ = 'MIT License'
