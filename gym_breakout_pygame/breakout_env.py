@@ -6,6 +6,7 @@ The breakout game is based on CoderDojoSV/beginner-python's tutorial
 Luca Iocchi 2017
 """
 import math
+import random
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Optional, Set, Tuple, Dict
@@ -113,12 +114,15 @@ class BreakoutConfiguration(object):
                  brick_width: int = 60,
                  brick_height: int = 12,
                  brick_xdistance: int = 20,
-                 brick_reward: int = 5,
+                 brick_reward: float = 5.0,
                  ball_radius: int = 10,
                  resolution_x: int = 20,
                  resolution_y: int = 10,
-                 horizon: Optional[int] = None):
+                 horizon: Optional[int] = None,
+                 complex_bump: bool = False,
+                 deterministic: bool = True):
         assert brick_cols >= 3, "The number of columns must be at least three."
+        assert brick_rows >= 1, "The number of columns must be at least three."
         self._brick_rows = brick_rows
         self._brick_cols = brick_cols
         self._paddle_width = paddle_width
@@ -132,6 +136,8 @@ class BreakoutConfiguration(object):
         self._resolution_x = resolution_x
         self._resolution_y = resolution_y
         self._horizon = horizon if horizon is not None else 300 * (self._brick_cols * self._brick_rows)
+        self._complex_bump = complex_bump
+        self._deterministic = deterministic
 
         self.init_ball_speed_x = 2
         self.init_ball_speed_y = 5
@@ -207,7 +213,7 @@ class BreakoutConfiguration(object):
         return self._brick_xdistance
 
     @property
-    def brick_reward(self):
+    def brick_reward(self) -> float:
         return self._brick_reward
 
     @property
@@ -225,6 +231,14 @@ class BreakoutConfiguration(object):
     @property
     def horizon(self) -> int:
         return self._horizon
+
+    @property
+    def complex_bump(self) -> bool:
+        return self._complex_bump
+
+    @property
+    def deterministic(self) -> bool:
+        return self._deterministic
 
 
 class Command(Enum):
@@ -430,11 +444,11 @@ class BreakoutState(object):
     def to_dict(self) -> Dict:
         """Extract the state observation based on the game configuration."""
 
-        ball_x = int(self.ball.x) // self.config._resolution_x
-        ball_y = int(self.ball.y) // self.config._resolution_y
+        ball_x = int(self.ball.x) // self.config.resolution_x
+        ball_y = int(self.ball.y) // self.config.resolution_y
         ball_x_speed = self.ball.speed_x_norm
         ball_y_speed = self.ball.speed_y_norm
-        paddle_x = int(self.paddle.x) // self.config._resolution_x
+        paddle_x = int(self.paddle.x) // self.config.resolution_x
         bricks_matrix = self.brick_grid.bricksgrid
 
         return {
@@ -469,6 +483,8 @@ class BreakoutState(object):
         if ball.y < ball.radius:
             ball.y = ball.radius
             ball.speed_y = - ball.speed_y
+            if np.isclose(ball.speed_x, 0.0):
+                ball.speed_x = 1.0 * random.choice([-1.0, 1.0])
         if ball.x < ball.radius:
             ball.x = ball.radius
             ball.speed_x = - ball.speed_x
@@ -478,33 +494,53 @@ class BreakoutState(object):
 
         # for paddle
         if ball_rect.colliderect(paddle_rect):
-            dbp = math.fabs(ball.x - (paddle.x + paddle.width // 2))
-            if dbp < 20:
-                # print 'straight'
-                if ball.speed_x < -5:
-                    ball.speed_x += 2
-                elif ball.speed_x > 5:
-                    ball.speed_x -= 2
-                elif ball.speed_x <= -0.5:
-                    ball.speed_x += 0.5
-                elif ball.speed_x >= 0.5:
-                    ball.speed_x -= 0.5
+            if self.config.complex_bump:
+                dbp = math.fabs(ball.x - (paddle.x + paddle.width / 2))
+                if dbp < 20:
+                    # print 'straight'
+                    if (ball.speed_x < -5):
+                        ball.speed_x += 2
+                    elif (ball.speed_x > 5):
+                        ball.speed_x -= 2
+                    elif (ball.speed_x <= -0.5):
+                        ball.speed_x += 0.5
+                    elif (ball.speed_x >= 0.5):
+                        ball.speed_x -= 0.5
 
-            dbp = math.fabs(ball.x - (paddle.x + 0))
-            if dbp < 10:
-                ball.speed_x = -abs(ball.speed_x) - 1
-            dbp = math.fabs(ball.x - (paddle.x + paddle.width))
-            if dbp < 10:
-                ball.speed_x = abs(ball.speed_x) + 1
+                dbp = math.fabs(ball.x - (paddle.x + 0))
+                if dbp < 10:
+                    # print 'left'
+                    ball.speed_x = -abs(ball.speed_x) - 1
+                dbp = math.fabs(ball.x - (paddle.x + paddle.width))
+                if dbp < 10:
+                    # print 'right'
+                    ball.speed_x = abs(ball.speed_x) + 1
+
+            else:
+                dbp = math.fabs(ball.x - (paddle.x + paddle.width / 2))
+                if dbp < 20:
+                    # print 'straight'
+                    if (ball.speed_x != 0):
+                        ball.speed_x = 2 * abs(ball.speed_x) / ball.speed_x
+                dbp = math.fabs(ball.x - (paddle.x + 0))
+                if dbp < 20:
+                    # print 'left'
+                    ball.speed_x = -5
+                    RandomEventGenerator.perturbate_ball_speed_after_paddle_hit(self)
+                dbp = math.fabs(ball.x - (paddle.x + paddle.width))
+                if dbp < 20:
+                    # print 'right'
+                    ball.speed_x = 5
+                    RandomEventGenerator.perturbate_ball_speed_after_paddle_hit(self)
 
             ball.speed_y = - abs(ball.speed_y)
 
         for brick in self.brick_grid.bricks.values():
             if brick.rect.colliderect(ball_rect):
-                self.score += self.config._brick_reward
+                self.score += self.config.brick_reward
                 self.remove_brick_at_position((brick.i, brick.j))
                 ball.speed_y = - ball.speed_y
-                reward += self.config._brick_reward
+                reward += self.config.brick_reward
                 break
 
         return reward
@@ -514,6 +550,37 @@ class BreakoutState(object):
         end2 = self.brick_grid.is_empty()
         end3 = self._steps > self.config.horizon
         return end1 or end2 or end3
+
+
+class RandomEventGenerator:
+
+    @classmethod
+    def perturbate_initial_ball_speed(cls, state: BreakoutState):
+        if not state.config.deterministic:
+            ran = random.uniform(0.75, 1.5)
+            state.ball.speed_x *= ran
+            # print("random ball_speed_x = %.2f" %self.ball_speed_x)
+
+    @classmethod
+    def perturbate_ball_speed_after_brick_hit(cls, state: BreakoutState):
+        if not state.config.deterministic:
+            ran = random.uniform(0.0, 1.0)
+            if ran < 0.5:
+                state.ball.speed_x *= -1
+            # print("random ball_speed_x = %.2f" %self.ball_speed_x)
+
+    @classmethod
+    def perturbate_ball_speed_after_paddle_hit(cls, state: BreakoutState):
+        if not state.config.deterministic:
+            ran = random.uniform(0.0, 1.0)
+            if ran < 0.1:
+                state.ball.speed_x *= 0.75
+            elif ran > 0.9:
+                state.ball.speed_x *= 1.5
+            sign = state.ball.speed_x / abs(state.ball.speed_x)
+            state.ball.speed_x = min(state.ball.speed_x, 6) * sign
+            state.ball.speed_x = max(state.ball.speed_x, 0.5) * sign
+            # print("random ball_speed_x = %.2f" %self.ball_speed_x)
 
 
 class Breakout(gym.Env, ABC):
