@@ -40,14 +40,18 @@ Or, install from source:
       
 Check for an `.mp4` file in `videos/`. You should get:
 
-![](docs/breakout-example.gif)
+<p align="center">
+  <img width="260" height="480" src="./docs/breakout-example.gif">
+</p>
 
 
 - Enable fire:
 
       python gym_breakout_pygame --fire
 
-![](docs/breakout-example-fire.gif)
+<p align="center">
+  <img width="260" height="480" src="./docs/breakout-example-fire.gif">
+</p>
 
 ## Tests
 
