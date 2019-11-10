@@ -36,11 +36,18 @@ Or, install from source:
     
 - Run a short demo:
 
-      python gym_breakout_pygame/breakout_env.py
+      python gym_breakout_pygame --record
       
-You should get:
+Check for an `.mp4` file in `videos/`. You should get:
 
 ![](docs/breakout-example.gif)
+
+
+- Enable fire:
+
+      python gym_breakout_pygame --fire
+
+![](docs/breakout-example-fire.gif)
 
 ## Tests
 
