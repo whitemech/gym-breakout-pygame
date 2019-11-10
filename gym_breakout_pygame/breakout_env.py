@@ -612,6 +612,7 @@ class BreakoutState(object):
             if brick.rect.colliderect(bullet_rect):
                 self.remove_brick_at_position((brick.i, brick.j))
                 reward += self.config.brick_reward
+                self.score += self.config.brick_reward
                 self.bullet.reset()
                 break
 
