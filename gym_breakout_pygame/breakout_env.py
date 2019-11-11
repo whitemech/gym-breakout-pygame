@@ -708,3 +708,33 @@ class Breakout(gym.Env, ABC):
         :param state: the state of the game
         :return: an instance of a gym.Space
         """
+
+    def play(self):
+        self.reset()
+        self.render()
+        quitted = False
+        while not quitted:
+            pygame.time.wait(10)
+            cmd = 0
+            events = pygame.event.get()
+            for e in events:
+                if e.type == pygame.KEYDOWN and e.key == pygame.K_q:
+                    quitted = True
+
+            pressed = pygame.key.get_pressed()
+            if pressed[pygame.K_LEFT]:
+                cmd = 1
+            elif pressed[pygame.K_RIGHT]:
+                cmd = 2
+            elif pressed[pygame.K_SPACE]:
+                cmd = 3
+
+            _, _, done, _ = self.step(cmd)
+            if done: self.reset()
+            self.render()
+
+
+if __name__ == '__main__':
+    from gym_breakout_pygame.wrappers.dict_space import BreakoutDictSpace
+    env = BreakoutDictSpace()
+    env.play()
