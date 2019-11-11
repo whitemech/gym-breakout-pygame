@@ -41,8 +41,7 @@ Or, install from source:
 Check for an `.mp4` file in `videos/`. You should get:
 
 <p align="center">
-  <img width="260" height="480" src="./docs/breakout-example.gif">
-</p>
+  <img width="260" height="480" src="https://raw.githubusercontent.com/sapienza-rl/gym-breakout-pygame/develop/docs/breakout-example.gif"></p>
 
 
 - Enable fire:
@@ -50,7 +49,7 @@ Check for an `.mp4` file in `videos/`. You should get:
       python gym_breakout_pygame --fire
 
 <p align="center">
-  <img width="260" height="480" src="./docs/breakout-example-fire.gif">
+  <img width="260" height="480" src="https://raw.githubusercontent.com/sapienza-rl/gym-breakout-pygame/develop/docs/breakout-example-fire.gif">
 </p>
 
 ## Tests
