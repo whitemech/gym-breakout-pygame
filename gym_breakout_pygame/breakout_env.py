@@ -116,6 +116,7 @@ class BreakoutConfiguration(object):
                  brick_height: int = 12,
                  brick_xdistance: int = 20,
                  brick_reward: float = 5.0,
+                 step_reward: float = - 0.01,
                  ball_radius: int = 10,
                  resolution_x: int = 20,
                  resolution_y: int = 10,
@@ -136,6 +137,7 @@ class BreakoutConfiguration(object):
         self._brick_height = brick_height
         self._brick_xdistance = brick_xdistance
         self._brick_reward = brick_reward
+        self._step_reward = step_reward
         self._ball_radius = ball_radius
         self._resolution_x = resolution_x
         self._resolution_y = resolution_y
@@ -221,6 +223,10 @@ class BreakoutConfiguration(object):
     @property
     def brick_reward(self) -> float:
         return self._brick_reward
+
+    @property
+    def step_reward(self) -> float:
+        return self._step_reward
 
     @property
     def ball_radius(self):
@@ -631,6 +637,7 @@ class BreakoutState(object):
                 self.bullet.reset()
                 break
 
+        reward += self.config.step_reward
         return reward
 
     def is_finished(self):
