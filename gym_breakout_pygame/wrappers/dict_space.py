@@ -21,18 +21,31 @@ class BreakoutDictSpace(BreakoutSkipper):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.observation_space = Dict({
-            "paddle_x": self._paddle_x_space,
-            "ball_x": self._ball_x_space,
-            "ball_y": self._ball_y_space,
-            "ball_x_speed": self._ball_x_speed_space,
-            "ball_y_speed": self._ball_y_speed_space,
-            "bricks_matrix": self._bricks_matrix_space,
-        })
+
+        if self.config.ball_enabled:
+            self.observation_space = Dict({
+                "paddle_x": self._paddle_x_space,
+                "ball_x": self._ball_x_space,
+                "ball_y": self._ball_y_space,
+                "ball_x_speed": self._ball_x_speed_space,
+                "ball_y_speed": self._ball_y_speed_space,
+                "bricks_matrix": self._bricks_matrix_space,
+            })
+        else:
+            self.observation_space = Dict({
+                "paddle_x": self._paddle_x_space,
+                "bricks_matrix": self._bricks_matrix_space,
+            })
 
     def observe(self, state: BreakoutState):
         """Observe the state."""
-        return state.to_dict()
+        dictionary = state.to_dict()
+        if not self.config.ball_enabled:
+            dictionary.pop("ball_x")
+            dictionary.pop("ball_y")
+            dictionary.pop("ball_x_speed")
+            dictionary.pop("ball_y_speed")
+        return dictionary
 
     @classmethod
     def compare(cls, obs1, obs2) -> bool:
