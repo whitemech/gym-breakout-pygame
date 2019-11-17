@@ -126,6 +126,7 @@ class BreakoutConfiguration(object):
                  deterministic: bool = True):
         assert brick_cols >= 3, "The number of columns must be at least three."
         assert brick_rows >= 1, "The number of columns must be at least three."
+        assert fire_enabled or ball_enabled, "Either fire or ball must be enabled."
         self._brick_rows = brick_rows
         self._brick_cols = brick_cols
         self._paddle_width = paddle_width
