@@ -88,13 +88,13 @@ class PygameViewer(_AbstractPygameViewer):
 
     def _draw_score_label(self):
         score_label = self.myfont.render(str(self.state.score), 100, pygame.color.THECOLORS['black'])
-        self.screen.blit(score_label, (20, 10))
+        self.screen.blit(score_label, (50, 10))
 
     def _draw_last_command(self):
         cmd = self.state.last_command
         s = '%s' % cmd
         count_label = self.myfont.render(s, 100, pygame.color.THECOLORS['brown'])
-        self.screen.blit(count_label, (60, 10))
+        self.screen.blit(count_label, (20, 10))
 
     def _draw_game_objects(self):
         for d in self.drawables:
@@ -121,6 +121,7 @@ class BreakoutConfiguration(object):
                  resolution_y: int = 10,
                  horizon: Optional[int] = None,
                  fire_enabled: bool = False,
+                 ball_enabled: bool = True,
                  complex_bump: bool = False,
                  deterministic: bool = True):
         assert brick_cols >= 3, "The number of columns must be at least three."
@@ -141,6 +142,7 @@ class BreakoutConfiguration(object):
         self._complex_bump = complex_bump
         self._deterministic = deterministic
         self._fire_enabled = fire_enabled
+        self._ball_enabled = ball_enabled
 
         self.init_ball_speed_x = 2
         self.init_ball_speed_y = 5
@@ -240,6 +242,10 @@ class BreakoutConfiguration(object):
         return self._fire_enabled
 
     @property
+    def ball_enabled(self) -> bool:
+        return self._ball_enabled
+
+    @property
     def complex_bump(self) -> bool:
         return self._complex_bump
 
@@ -326,16 +332,24 @@ class Ball(PygameDrawable):
     def __init__(self, breakout_config: BreakoutConfiguration):
         self.config = breakout_config
 
-        _initial_ball_x = self.config.win_width // 2
-        _initial_ball_y = self.config.win_height - 100 - self.config._ball_radius
-        self.x = _initial_ball_x
-        self.y = _initial_ball_y
-        self.speed_x = self.config.init_ball_speed_x
-        self.speed_y = self.config.init_ball_speed_y
+        if breakout_config.ball_enabled:
+            _initial_ball_x = self.config.win_width // 2
+            _initial_ball_y = self.config.win_height - 100 - self.config._ball_radius
+            self.x = _initial_ball_x
+            self.y = _initial_ball_y
+            self.speed_x = self.config.init_ball_speed_x
+            self.speed_y = self.config.init_ball_speed_y
+            self._radius = self.config.ball_radius
+        else:
+            self.x = 0
+            self.y = 0
+            self.speed_x = 0.0
+            self.speed_y = 0.0
+            self._radius = 0
 
     @property
     def radius(self):
-        return self.config._ball_radius
+        return self._radius
 
     @property
     def speed_x_norm(self) -> int:
@@ -632,7 +646,7 @@ class RandomEventGenerator:
         if not state.config.deterministic:
             ran = random.uniform(0.75, 1.5)
             state.ball.speed_x *= ran
-            # print("random ball_speed_x = %.2f" %self.ball_speed_x)
+            # print(print("random ball_speed_x = %.2f" %self.ball_speed_x)
 
     @classmethod
     def perturbate_ball_speed_after_brick_hit(cls, state: BreakoutState):
@@ -732,9 +746,3 @@ class Breakout(gym.Env, ABC):
             _, _, done, _ = self.step(cmd)
             if done: self.reset()
             self.render()
-
-
-if __name__ == '__main__':
-    from gym_breakout_pygame.wrappers.dict_space import BreakoutDictSpace
-    env = BreakoutDictSpace()
-    env.play()

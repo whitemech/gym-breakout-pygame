@@ -21,19 +21,15 @@ def parse_arguments():
     parser.add_argument("--rows", type=int, default=3, help="Number of rows")
     parser.add_argument("--columns", type=int, default=3, help="Number of columns")
     parser.add_argument("--fire", action="store_true", help="Enable fire.")
+    parser.add_argument("--disable-ball", action="store_true", help="Disable the ball.")
     parser.add_argument("--record", action="store_true", help="Record a video.")
     parser.add_argument("--output-dir", type=str, default="videos/" + str(datetime.now()), help="Video directory.")
+    parser.add_argument("--random", action="store_true", help="Play randomly")
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
-    args = parse_arguments()
-    config = BreakoutConfiguration(brick_rows=args.rows, brick_cols=args.columns, fire_enabled=args.fire)
-    env = BreakoutDictSpace(config)
-    if args.record:
-        env = Monitor(env, args.output_dir)
-
+def _play_randomly(env):
     env.reset()
     env.render(mode="human")
     done = False
@@ -42,3 +38,21 @@ if __name__ == '__main__':
         env.render(mode="human")
         obs, r, done, info = env.step(env.action_space.sample())  # take a random action
     env.close()
+
+
+if __name__ == '__main__':
+    args = parse_arguments()
+    config = BreakoutConfiguration(
+        brick_rows=args.rows,
+        brick_cols=args.columns,
+        fire_enabled=args.fire,
+        ball_enabled=not args.disable_ball,
+    )
+    env = BreakoutDictSpace(config)
+    if args.record:
+        env = Monitor(env, args.output_dir)
+
+    if args.random:
+        _play_randomly(env)
+    else:
+        env.play()
