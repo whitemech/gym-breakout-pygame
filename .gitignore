@@ -108,3 +108,5 @@ examples/*.meta.json
 examples/*.stats.json
 examples/*.manifest.json
 examples/*.h5f
+videos/
+

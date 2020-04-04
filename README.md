@@ -15,7 +15,7 @@ Gym Breakout environment using Pygame.
 
 Install with `pip`:
 
-    pip3 install gym_breakout_pygame==0.1.0
+    pip3 install gym_breakout_pygame
     
 Or, install from source:
 
@@ -36,7 +36,7 @@ Or, install from source:
     
 - Run a short demo:
 
-        python gym_breakout_pygame --record
+        python gym_breakout_pygame --random --record
       
 Check for an `.mp4` file in `videos/`. You should get:
 
