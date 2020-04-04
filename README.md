@@ -27,16 +27,16 @@ Or, install from source:
 
 - clone the repo:
 
-      git clone https://github.com/whitemech/gym-breakout-pygame.git
-      cd gym-breakout-pygame
+        git clone https://github.com/whitemech/gym-breakout-pygame.git
+        cd gym-breakout-pygame
     
 - Create/activate the virtual environment:
 
-      pipenv shell --python=python3.7
+        pipenv shell --python=python3.7
     
 - Run a short demo:
 
-      python gym_breakout_pygame --record
+        python gym_breakout_pygame --record
       
 Check for an `.mp4` file in `videos/`. You should get:
 
@@ -46,7 +46,7 @@ Check for an `.mp4` file in `videos/`. You should get:
 
 - Enable fire:
 
-      python gym_breakout_pygame --fire
+        python gym_breakout_pygame --fire
 
 <p align="center">
   <img width="260" height="480" src="https://raw.githubusercontent.com/whitemech/gym-breakout-pygame/develop/docs/breakout-example-fire.gif">
@@ -54,11 +54,13 @@ Check for an `.mp4` file in `videos/`. You should get:
 
 ## Tests
 
-TODO
+We use `tox` for testing:
 
-## License
-
-Apache License 2.0
+```
+tox -e py3.x
+```
+Replace `x` depending on the minor version of your Python interpreter. E.g.
+`tox -e py3.7`
 
 ## Credits
 
