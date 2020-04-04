@@ -9,7 +9,14 @@
 
 Gym Breakout environment using Pygame.
 
-## Preliminaries
+## Links
+
+- GitHub: [https://github.com/whitemech/gym-breakout-pygame](https://github.com/whitemech/gym-breakout-pygame)
+- PyPI: [https://pypi.org/project/gym_breakout_pygame/](https://pypi.org/project/gym_breakout_pygame/)
+- Documentation: [https://whitemech.github.io/gym-breakout-pygame](https://whitemech.github.io/gym-breakout-pygame)
+- Changelog: [https://whitemech.github.io/gym-breakout-pygame/history/](https://whitemech.github.io/gym-breakout-pygame/history/)
+- Issue Tracker:[https://github.com/whitemech/gym-breakout-pygame/issues](https://github.com/whitemech/gym-breakout-pygame/issues)
+- Download: [https://pypi.org/project/gym_breakout_pygame/#files](https://pypi.org/project/gym_breakout_pygame/#files)
 
 ## Install
 
