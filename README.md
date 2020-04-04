@@ -5,7 +5,7 @@
 [![](https://img.shields.io/pypi/l/aea)](https://github.com/fetchai/agents-aea/blob/master/LICENSE)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/aea)
 ![Codecov](https://img.shields.io/codecov/c/github/whitemech/gym_breakout_env)
-![CI](https://github.com/whitemech/gym_breakout_env/workflows/CI/badge.svg?branch=master)
+![CI](https://github.com/whitemech/gym-breakout-pygame/workflows/CI/badge.svg)
 
 Gym Breakout environment using Pygame.
 
@@ -19,7 +19,7 @@ Install with `pip`:
     
 Or, install from source:
 
-    git clone https://github.com/sapienza-rl/gym-breakout-pygame.git
+    git clone https://github.com/whitemech/gym-breakout-pygame.git
     cd gym-breakout-pygame
     pip install .
 
@@ -27,7 +27,7 @@ Or, install from source:
 
 - clone the repo:
 
-      git clone https://github.com/sapienza-rl/gym-breakout-pygame.git
+      git clone https://github.com/whitemech/gym-breakout-pygame.git
       cd gym-breakout-pygame
     
 - Create/activate the virtual environment:
@@ -41,7 +41,7 @@ Or, install from source:
 Check for an `.mp4` file in `videos/`. You should get:
 
 <p align="center">
-  <img width="260" height="480" src="https://raw.githubusercontent.com/sapienza-rl/gym-breakout-pygame/develop/docs/breakout-example.gif"></p>
+  <img width="260" height="480" src="https://raw.githubusercontent.com/whitemech/gym-breakout-pygame/develop/docs/breakout-example.gif"></p>
 
 
 - Enable fire:
@@ -49,7 +49,7 @@ Check for an `.mp4` file in `videos/`. You should get:
       python gym_breakout_pygame --fire
 
 <p align="center">
-  <img width="260" height="480" src="https://raw.githubusercontent.com/sapienza-rl/gym-breakout-pygame/develop/docs/breakout-example-fire.gif">
+  <img width="260" height="480" src="https://raw.githubusercontent.com/whitemech/gym-breakout-pygame/develop/docs/breakout-example-fire.gif">
 </p>
 
 ## Tests
@@ -58,7 +58,7 @@ TODO
 
 ## License
 
-MIT License.
+Apache License 2.0
 
 ## Credits
 
