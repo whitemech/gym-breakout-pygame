@@ -1,11 +1,11 @@
 # gym-breakout-pygame
 
-[![PyPI](https://img.shields.io/pypi/v/gym_breakout_env)](https://pypi.org/project/gym_breakout_env/)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gym_breakout_env)
-[![](https://img.shields.io/pypi/l/aea)](https://github.com/fetchai/agents-aea/blob/master/LICENSE)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/aea)
-![Codecov](https://img.shields.io/codecov/c/github/whitemech/gym_breakout_env)
+[![PyPI](https://img.shields.io/pypi/v/gym_breakout_pygame)](https://pypi.org/project/gym_breakout_pygame/)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gym_breakout_pygame)
+[![](https://img.shields.io/pypi/l/aea)](https://github.com/whitemech/gym-breakout-pygame/blob/master/LICENSE)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/gym_breakout_pygame)
 ![CI](https://github.com/whitemech/gym-breakout-pygame/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/whitemech/gym-breakout-pygame/branch/master/graph/badge.svg)](https://codecov.io/gh/whitemech/gym-breakout-pygame)
 
 Gym Breakout environment using Pygame.
 
