@@ -1,15 +1,15 @@
 # gym-breakout-pygame
 
-[![](https://img.shields.io/pypi/v/gym_breakout_env.svg)](https://pypi.python.org/pypi/gym_breakout_env)
-[![](https://img.shields.io/travis/sapienza-rl/gym_breakout_env.svg)](https://travis-ci.org/sapienza-rl/gym_breakout_env)
-[![](https://img.shields.io/pypi/pyversions/gym_breakout_env.svg)](https://pypi.python.org/pypi/gym_breakout_env)
-[![](https://coveralls.io/repos/github/sapienza-rl/gym_breakout_env/badge.svg?branch=master)](https://coveralls.io/github/sapienza-rl/gym_breakout_env?branch=master)
-[![](https://img.shields.io/badge/license-Apache%202-lightgrey)](https://img.shields.io/badge/license-Apache%202-lightgrey)
-<!-- [![](https://img.shields.io/badge/flake8-checked-blueviolet)](https://img.shields.io/badge/flake8-checked-blueviolet) -->
-<!--  [![](https://img.shields.io/badge/mypy-checked-blue)](https://img.shields.io/badge/mypy-checked-blue) -->
-
+[![PyPI](https://img.shields.io/pypi/v/gym_breakout_env)](https://pypi.org/project/gym_breakout_env/)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gym_breakout_env)
+[![](https://img.shields.io/pypi/l/aea)](https://github.com/fetchai/agents-aea/blob/master/LICENSE)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/aea)
+![Codecov](https://img.shields.io/codecov/c/github/whitemech/gym_breakout_env)
+![CI](https://github.com/whitemech/gym_breakout_env/workflows/CI/badge.svg?branch=master)
 
 Gym Breakout environment using Pygame.
+
+## Preliminaries
 
 ## Install
 
@@ -32,7 +32,7 @@ Or, install from source:
     
 - Create/activate the virtual environment:
 
-      pipenv shell
+      pipenv shell --python=python3.7
     
 - Run a short demo:
 

@@ -47,6 +47,7 @@ clean-pyc: ## remove Python file artifacts
 clean-test: ## remove test and coverage artifacts
 	rm -fr .tox/
 	rm -f .coverage
+	rm coverage.xml
 	rm -fr htmlcov/
 
 lint: ## check style with flake8
@@ -64,16 +65,11 @@ coverage: ## check code coverage quickly with the default Python
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
-docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/gym_breakout_pygame.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ gym_breakout_pygame
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
+docs: ## generate MkDocs HTML documentation, including API docs
+	mkdocs build
 
 servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+	mkdocs serve 
 
 release: dist ## package and upload a release
 	twine upload dist/*
