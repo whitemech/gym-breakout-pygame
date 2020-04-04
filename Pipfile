@@ -16,12 +16,10 @@ flake8 = "*"
 flake8-docstrings = "*"
 pydocstyle = "==3.0.0"
 mypy = "*"
-baselines = {editable = true,path = "./examples/baselines"}
+pytest = "*"
+pytest-cov = "*"
 
 [packages]
-gym = "*"
-pygame = "*"
-numpy = "*"
 
 [requires]
-python_version = "3"
+python_version = "3.7"
