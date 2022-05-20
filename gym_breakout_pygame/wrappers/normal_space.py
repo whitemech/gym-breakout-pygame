@@ -58,15 +58,16 @@ class BreakoutNDiscrete(BreakoutSkipper):
 
     def __init__(self, config: Optional[BreakoutConfiguration] = None):
         super().__init__(config)
-        self.observation_space = Discrete(config.n_paddle_x * config.n_ball_x * config.n_ball_y
-                                          * config.n_ball_x_speed * config.n_ball_y_speed)
+        self.observation_space = Discrete(self.config.n_paddle_x * self.config.n_ball_x * self.config.n_ball_y
+                                          * self.config.n_ball_x_speed * self.config.n_ball_y_speed)
 
     @classmethod
     def observe(cls, state: BreakoutState):
-        obs = BreakoutNMultiDiscrete.observe(state)
+        obs = list(map(int, BreakoutNMultiDiscrete.observe(state)))
         dims = [state.config.n_paddle_x, state.config.n_ball_x, state.config.n_ball_y,
                 state.config.n_ball_x_speed, state.config.n_ball_y_speed]
-        return encode(list(obs), dims)
+        result = encode(list(obs), dims)
+        return result
 
     @classmethod
     def compare(cls, obs1, obs2):
