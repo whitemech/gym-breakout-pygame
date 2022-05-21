@@ -15,6 +15,7 @@ import gym
 import numpy as np
 import pygame
 from gym.spaces import Discrete, MultiBinary
+from gym.utils.seeding import np_random
 
 Position = Tuple[int, int]
 
@@ -490,7 +491,8 @@ class Bullet(PygameDrawable):
 
 class BreakoutState(object):
 
-    def __init__(self, breakout_configuration: BreakoutConfiguration):
+    def __init__(self, breakout_configuration: BreakoutConfiguration,
+                 random_event_gen: Optional["RandomEventGenerator"] = None):
         self.config = breakout_configuration
 
         self.ball = Ball(self.config)
@@ -507,8 +509,10 @@ class BreakoutState(object):
         self.score = 0
         self._steps = 0
 
+        self._random_event_gen = RandomEventGenerator() if random_event_gen is None else random_event_gen
+
     def reset(self) -> 'BreakoutState':
-        return BreakoutState(self.config)
+        return BreakoutState(self.config, self._random_event_gen)
 
     def update(self, command: Command):
         self.paddle.update(command)
@@ -607,12 +611,12 @@ class BreakoutState(object):
                 if dbp < 20:
                     # print 'left'
                     ball.speed_x = -5
-                    RandomEventGenerator.perturbate_ball_speed_after_paddle_hit(self)
+                    self._random_event_gen.perturbate_ball_speed_after_paddle_hit(self)
                 dbp = math.fabs(ball.x - (paddle.x + paddle.width))
                 if dbp < 20:
                     # print 'right'
                     ball.speed_x = 5
-                    RandomEventGenerator.perturbate_ball_speed_after_paddle_hit(self)
+                    self._random_event_gen.perturbate_ball_speed_after_paddle_hit(self)
 
             ball.speed_y = - abs(ball.speed_y)
 
@@ -658,28 +662,33 @@ class BreakoutState(object):
         end3 = self._steps > self.config.horizon
         return end1 or end2 or end3
 
+    def set_seed(self, seed: int):
+        self._random_event_gen = RandomEventGenerator(seed)
+
 
 class RandomEventGenerator:
 
-    @classmethod
-    def perturbate_initial_ball_speed(cls, state: BreakoutState):
+    def __init__(self, seed: Optional[int] = None):
+        """Initialize the random event generator."""
+        self._seed = seed
+        self._rng = np_random(self._seed)[0]
+
+    def perturbate_initial_ball_speed(self, state: BreakoutState):
         if not state.config.deterministic:
-            ran = random.uniform(0.75, 1.5)
+            ran = self._rng.uniform(0.75, 1.5)
             state.ball.speed_x *= ran
             # print(print("random ball_speed_x = %.2f" %self.ball_speed_x)
 
-    @classmethod
-    def perturbate_ball_speed_after_brick_hit(cls, state: BreakoutState):
+    def perturbate_ball_speed_after_brick_hit(self, state: BreakoutState):
         if not state.config.deterministic:
-            ran = random.uniform(0.0, 1.0)
+            ran = self._rng.uniform(0.0, 1.0)
             if ran < 0.5:
                 state.ball.speed_x *= -1
             # print("random ball_speed_x = %.2f" %self.ball_speed_x)
 
-    @classmethod
-    def perturbate_ball_speed_after_paddle_hit(cls, state: BreakoutState):
+    def perturbate_ball_speed_after_paddle_hit(self, state: BreakoutState):
         if not state.config.deterministic:
-            ran = random.uniform(0.0, 1.0)
+            ran = self._rng.uniform(0.0, 1.0)
             if ran < 0.1:
                 state.ball.speed_x *= 0.75
             elif ran > 0.9:
@@ -719,8 +728,10 @@ class Breakout(gym.Env, ABC):
         info = {}
         return obs, reward, is_finished, info
 
-    def reset(self):
-        self.state = BreakoutState(self.config)
+    def reset(self, seed: Optional[int] = None, **kwargs):
+        self.state = self.state.reset()
+        if seed is not None:
+            self.state.set_seed(seed)
         if self.viewer is not None:
             self.viewer.reset(self.state)
         return self.observe(self.state)
