@@ -1,4 +1,26 @@
-# -*- coding: utf-8 -*-
+# MIT License
+#
+# Copyright (c) 2019-2022 Marco Favorito, Luca Iocchi
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+
 
 """Breakout environments using a "normal" state space.
 - BreakoutNMultiDiscrete
@@ -10,7 +32,11 @@ from typing import Optional
 import numpy as np
 from gym.spaces import Discrete, MultiDiscrete
 
-from gym_breakout_pygame.breakout_env import Breakout, BreakoutConfiguration, BreakoutState
+from gym_breakout_pygame.breakout_env import (
+    Breakout,
+    BreakoutConfiguration,
+    BreakoutState,
+)
 from gym_breakout_pygame.utils import encode
 from gym_breakout_pygame.wrappers.skipper import BreakoutSkipper
 
@@ -27,13 +53,15 @@ class BreakoutNMultiDiscrete(BreakoutSkipper):
 
     def __init__(self, config: Optional[BreakoutConfiguration] = None):
         super().__init__(config)
-        self.observation_space = MultiDiscrete((
-            self._paddle_x_space.n,
-            self._ball_x_space.n,
-            self._ball_y_space.n,
-            self._ball_x_speed_space.n,
-            self._ball_y_speed_space.n
-        ))
+        self.observation_space = MultiDiscrete(
+            (
+                self._paddle_x_space.n,
+                self._ball_x_space.n,
+                self._ball_y_space.n,
+                self._ball_x_speed_space.n,
+                self._ball_y_speed_space.n,
+            )
+        )
 
     @classmethod
     def compare(cls, obs1: np.ndarray, obs2: np.ndarray):
@@ -58,14 +86,24 @@ class BreakoutNDiscrete(BreakoutSkipper):
 
     def __init__(self, config: Optional[BreakoutConfiguration] = None):
         super().__init__(config)
-        self.observation_space = Discrete(self.config.n_paddle_x * self.config.n_ball_x * self.config.n_ball_y
-                                          * self.config.n_ball_x_speed * self.config.n_ball_y_speed)
+        self.observation_space = Discrete(
+            self.config.n_paddle_x
+            * self.config.n_ball_x
+            * self.config.n_ball_y
+            * self.config.n_ball_x_speed
+            * self.config.n_ball_y_speed
+        )
 
     @classmethod
     def observe(cls, state: BreakoutState):
         obs = list(map(int, BreakoutNMultiDiscrete.observe(state)))
-        dims = [state.config.n_paddle_x, state.config.n_ball_x, state.config.n_ball_y,
-                state.config.n_ball_x_speed, state.config.n_ball_y_speed]
+        dims = [
+            state.config.n_paddle_x,
+            state.config.n_ball_x,
+            state.config.n_ball_y,
+            state.config.n_ball_x_speed,
+            state.config.n_ball_y_speed,
+        ]
         result = encode(list(obs), dims)
         return result
 

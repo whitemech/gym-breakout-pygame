@@ -1,4 +1,26 @@
-# -*- coding: utf-8 -*-
+# MIT License
+#
+# Copyright (c) 2019-2022 Marco Favorito, Luca Iocchi
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+
 
 """
 The breakout game is based on CoderDojoSV/beginner-python's tutorial
@@ -9,7 +31,7 @@ import math
 import random
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Optional, Set, Tuple, Dict
+from typing import Dict, Optional, Set, Tuple
 
 import gym
 import numpy as np
@@ -27,16 +49,14 @@ red = [180, 0, 0]
 
 
 class PygameDrawable(ABC):
-
     @abstractmethod
     def draw_on_screen(self, screen: pygame.Surface):
         """Draw a Pygame object on a given Pygame screen."""
 
 
 class _AbstractPygameViewer(ABC):
-
     @abstractmethod
-    def reset(self, breakout_state: 'BreakoutState'):
+    def reset(self, breakout_state: "BreakoutState"):
         pass
 
     @abstractmethod
@@ -49,17 +69,18 @@ class _AbstractPygameViewer(ABC):
 
 
 class PygameViewer(_AbstractPygameViewer):
-
-    def __init__(self, breakout_state: 'BreakoutState'):
+    def __init__(self, breakout_state: "BreakoutState"):
         self.state = breakout_state
 
         pygame.init()
-        pygame.display.set_caption('Breakout')
-        self.screen = pygame.display.set_mode([self.state.config.win_width, self.state.config.win_height])
+        pygame.display.set_caption("Breakout")
+        self.screen = pygame.display.set_mode(
+            [self.state.config.win_width, self.state.config.win_height]
+        )
         self.myfont = pygame.font.SysFont("Arial", 30)
         self.drawables = self._init_drawables()  # type: Set[PygameDrawable]
 
-    def reset(self, breakout_state: 'BreakoutState'):
+    def reset(self, breakout_state: "BreakoutState"):
         self.state = breakout_state
         self.drawables = self._init_drawables()
 
@@ -88,13 +109,15 @@ class PygameViewer(_AbstractPygameViewer):
         self.screen.fill(white)
 
     def _draw_score_label(self):
-        score_label = self.myfont.render(str(self.state.score), 100, pygame.color.THECOLORS['black'])
+        score_label = self.myfont.render(
+            str(self.state.score), 100, pygame.color.THECOLORS["black"]
+        )
         self.screen.blit(score_label, (50, 10))
 
     def _draw_last_command(self):
         cmd = self.state.last_command
-        s = '%s' % cmd
-        count_label = self.myfont.render(s, 100, pygame.color.THECOLORS['brown'])
+        s = "%s" % cmd
+        count_label = self.myfont.render(s, 100, pygame.color.THECOLORS["brown"])
         self.screen.blit(count_label, (20, 10))
 
     def _draw_game_objects(self):
@@ -107,26 +130,28 @@ class PygameViewer(_AbstractPygameViewer):
 
 
 class BreakoutConfiguration(object):
-
-    def __init__(self, brick_rows: int = 3,
-                 brick_cols: int = 3,
-                 paddle_width: int = 80,
-                 paddle_height: int = 10,
-                 paddle_speed: int = 10,
-                 brick_width: int = 60,
-                 brick_height: int = 12,
-                 brick_xdistance: int = 20,
-                 brick_reward: float = 5.0,
-                 step_reward: float = - 0.01,
-                 game_over_reward: float = - 10.0,
-                 ball_radius: int = 10,
-                 resolution_x: int = 20,
-                 resolution_y: int = 10,
-                 horizon: Optional[int] = None,
-                 fire_enabled: bool = False,
-                 ball_enabled: bool = True,
-                 complex_bump: bool = False,
-                 deterministic: bool = True):
+    def __init__(
+        self,
+        brick_rows: int = 3,
+        brick_cols: int = 3,
+        paddle_width: int = 80,
+        paddle_height: int = 10,
+        paddle_speed: int = 10,
+        brick_width: int = 60,
+        brick_height: int = 12,
+        brick_xdistance: int = 20,
+        brick_reward: float = 5.0,
+        step_reward: float = -0.01,
+        game_over_reward: float = -10.0,
+        ball_radius: int = 10,
+        resolution_x: int = 20,
+        resolution_y: int = 10,
+        horizon: Optional[int] = None,
+        fire_enabled: bool = False,
+        ball_enabled: bool = True,
+        complex_bump: bool = False,
+        deterministic: bool = True,
+    ):
         assert brick_cols >= 3, "The number of columns must be at least three."
         assert brick_rows >= 1, "The number of columns must be at least three."
         assert fire_enabled or ball_enabled, "Either fire or ball must be enabled."
@@ -144,7 +169,11 @@ class BreakoutConfiguration(object):
         self._ball_radius = ball_radius
         self._resolution_x = resolution_x
         self._resolution_y = resolution_y
-        self._horizon = horizon if horizon is not None else 300 * (self._brick_cols * self._brick_rows)
+        self._horizon = (
+            horizon
+            if horizon is not None
+            else 300 * (self._brick_cols * self._brick_rows)
+        )
         self._complex_bump = complex_bump
         self._deterministic = deterministic
         self._fire_enabled = fire_enabled
@@ -156,7 +185,10 @@ class BreakoutConfiguration(object):
 
     @property
     def win_width(self):
-        return int((self._brick_width + self._brick_xdistance) * self._brick_cols + self._brick_xdistance)
+        return int(
+            (self._brick_width + self._brick_xdistance) * self._brick_cols
+            + self._brick_xdistance
+        )
 
     @property
     def win_height(self):
@@ -289,16 +321,22 @@ class Command(Enum):
 
 
 class Brick(PygameDrawable):
-
-    def __init__(self, i: int, j: int, width: int, height: int, xdistance: int,):
+    def __init__(
+        self,
+        i: int,
+        j: int,
+        width: int,
+        height: int,
+        xdistance: int,
+    ):
         self.i = i
         self.j = j
         self.width = width
         self.height = height
         self.xdistance = xdistance
 
-        self.x = (self.width+self.xdistance)*i+self.xdistance
-        self.y = 70+(self.height+8)*j
+        self.x = (self.width + self.xdistance) * i + self.xdistance
+        self.y = 70 + (self.height + 8) * j
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def draw_on_screen(self, screen):
@@ -306,12 +344,14 @@ class Brick(PygameDrawable):
 
 
 class BrickGrid(PygameDrawable):
-
-    def __init__(self, brick_cols: int,
-                 brick_rows: int,
-                 brick_width: int,
-                 brick_height: int,
-                 brick_xdistance: int):
+    def __init__(
+        self,
+        brick_cols: int,
+        brick_rows: int,
+        brick_width: int,
+        brick_height: int,
+        brick_xdistance: int,
+    ):
         self.brick_cols = brick_cols
         self.brick_rows = brick_rows
         self.brick_width = brick_width
@@ -325,7 +365,9 @@ class BrickGrid(PygameDrawable):
     def _init_bricks(self):
         for i in range(0, self.brick_cols):
             for j in range(0, self.brick_rows):
-                temp = Brick(i, j, self.brick_width, self.brick_height, self.brick_xdistance)
+                temp = Brick(
+                    i, j, self.brick_width, self.brick_height, self.brick_xdistance
+                )
                 self.bricks[(i, j)] = temp
                 self.bricksgrid[i][j] = 1
 
@@ -342,7 +384,6 @@ class BrickGrid(PygameDrawable):
 
 
 class Ball(PygameDrawable):
-
     def __init__(self, breakout_config: BreakoutConfiguration):
         self.config = breakout_config
 
@@ -411,7 +452,6 @@ class Ball(PygameDrawable):
 
 
 class Paddle(PygameDrawable):
-
     def __init__(self, breakout_config: BreakoutConfiguration):
         self.config = breakout_config
 
@@ -454,7 +494,6 @@ class Paddle(PygameDrawable):
 
 
 class Bullet(PygameDrawable):
-
     def __init__(self, breakout_config: BreakoutConfiguration):
         self.config = breakout_config
 
@@ -490,28 +529,34 @@ class Bullet(PygameDrawable):
 
 
 class BreakoutState(object):
-
-    def __init__(self, breakout_configuration: BreakoutConfiguration,
-                 random_event_gen: Optional["RandomEventGenerator"] = None):
+    def __init__(
+        self,
+        breakout_configuration: BreakoutConfiguration,
+        random_event_gen: Optional["RandomEventGenerator"] = None,
+    ):
         self.config = breakout_configuration
 
         self.ball = Ball(self.config)
         self.paddle = Paddle(self.config)
-        self.brick_grid = BrickGrid(self.config.brick_cols,
-                                    self.config.brick_rows,
-                                    self.config.brick_width,
-                                    self.config.brick_height,
-                                    self.config.brick_xdistance)
-        
+        self.brick_grid = BrickGrid(
+            self.config.brick_cols,
+            self.config.brick_rows,
+            self.config.brick_width,
+            self.config.brick_height,
+            self.config.brick_xdistance,
+        )
+
         self.bullet = Bullet(self.config)
 
         self.last_command = Command.NOP  # type: Command
         self.score = 0
         self._steps = 0
 
-        self._random_event_gen = RandomEventGenerator() if random_event_gen is None else random_event_gen
+        self._random_event_gen = (
+            RandomEventGenerator() if random_event_gen is None else random_event_gen
+        )
 
-    def reset(self) -> 'BreakoutState':
+    def reset(self) -> "BreakoutState":
         return BreakoutState(self.config, self._random_event_gen)
 
     def update(self, command: Command):
@@ -557,25 +602,24 @@ class BreakoutState(object):
         bullet = self.bullet
         brick_grid = self.brick_grid
 
-        ball_rect = pygame.Rect(ball.x - ball.radius,
-                                ball.y - ball.radius,
-                                ball.radius * 2,
-                                ball.radius * 2)
+        ball_rect = pygame.Rect(
+            ball.x - ball.radius, ball.y - ball.radius, ball.radius * 2, ball.radius * 2
+        )
         paddle_rect = pygame.Rect(paddle.x, paddle.y, paddle.width, paddle.height)
         bullet_rect = pygame.Rect(bullet.x, bullet.y, bullet.width, bullet.height)
 
         # for screen border
         if ball.y < ball.radius:
             ball.y = ball.radius
-            ball.speed_y = - ball.speed_y
+            ball.speed_y = -ball.speed_y
             if np.isclose(ball.speed_x, 0.0):
                 ball.speed_x = 1.0 * random.choice([-1.0, 1.0])
         if ball.x < ball.radius:
             ball.x = ball.radius
-            ball.speed_x = - ball.speed_x
+            ball.speed_x = -ball.speed_x
         if ball.x > self.config.win_width - ball.radius:
             ball.x = self.config.win_width - ball.radius
-            ball.speed_x = - ball.speed_x
+            ball.speed_x = -ball.speed_x
 
         # for paddle
         if ball_rect.colliderect(paddle_rect):
@@ -583,13 +627,13 @@ class BreakoutState(object):
                 dbp = math.fabs(ball.x - (paddle.x + paddle.width / 2))
                 if dbp < 20:
                     # print 'straight'
-                    if (ball.speed_x < -5):
+                    if ball.speed_x < -5:
                         ball.speed_x += 2
-                    elif (ball.speed_x > 5):
+                    elif ball.speed_x > 5:
                         ball.speed_x -= 2
-                    elif (ball.speed_x <= -0.5):
+                    elif ball.speed_x <= -0.5:
                         ball.speed_x += 0.5
-                    elif (ball.speed_x >= 0.5):
+                    elif ball.speed_x >= 0.5:
                         ball.speed_x -= 0.5
 
                 dbp = math.fabs(ball.x - (paddle.x + 0))
@@ -605,7 +649,7 @@ class BreakoutState(object):
                 dbp = math.fabs(ball.x - (paddle.x + paddle.width / 2))
                 if dbp < 20:
                     # print 'straight'
-                    if (ball.speed_x != 0):
+                    if ball.speed_x != 0:
                         ball.speed_x = 2 * abs(ball.speed_x) / ball.speed_x
                 dbp = math.fabs(ball.x - (paddle.x + 0))
                 if dbp < 20:
@@ -618,13 +662,13 @@ class BreakoutState(object):
                     ball.speed_x = 5
                     self._random_event_gen.perturbate_ball_speed_after_paddle_hit(self)
 
-            ball.speed_y = - abs(ball.speed_y)
+            ball.speed_y = -abs(ball.speed_y)
 
         for brick in brick_grid.bricks.values():
             if brick.rect.colliderect(ball_rect):
                 self.score += self.config.brick_reward
                 self.remove_brick_at_position((brick.i, brick.j))
-                ball.speed_y = - ball.speed_y
+                ball.speed_y = -ball.speed_y
                 reward += self.config.brick_reward
                 break
 
@@ -650,9 +694,15 @@ class BreakoutState(object):
         reward += self.config.step_reward
 
         # ball out
-        reward += self.config.game_over_reward if self.ball.y > self.config.win_height - self.ball.radius else 0
+        reward += (
+            self.config.game_over_reward
+            if self.ball.y > self.config.win_height - self.ball.radius
+            else 0
+        )
         # time out
-        reward += self.config.game_over_reward if self._steps > self.config.horizon else 0.0
+        reward += (
+            self.config.game_over_reward if self._steps > self.config.horizon else 0.0
+        )
 
         return reward
 
@@ -667,7 +717,6 @@ class BreakoutState(object):
 
 
 class RandomEventGenerator:
-
     def __init__(self, seed: Optional[int] = None):
         """Initialize the random event generator."""
         self._seed = seed
@@ -702,15 +751,19 @@ class RandomEventGenerator:
 class Breakout(gym.Env, ABC):
     """A generic Breakout env. The feature space must be define in subclasses."""
 
-    metadata = {'render.modes': ['human', 'rgb_array']}
+    metadata = {"render.modes": ["human", "rgb_array"]}
 
     def __init__(self, breakout_config: Optional[BreakoutConfiguration] = None):
 
-        self.config = BreakoutConfiguration() if breakout_config is None else breakout_config
+        self.config = (
+            BreakoutConfiguration() if breakout_config is None else breakout_config
+        )
         self.state = BreakoutState(self.config)
         self.viewer = None  # type: Optional[PygameViewer]
 
-        self.action_space = Discrete(len(Command) if self.config.fire_enabled else len(Command) - 1)
+        self.action_space = Discrete(
+            len(Command) if self.config.fire_enabled else len(Command) - 1
+        )
 
         self._paddle_x_space = Discrete(self.config.n_paddle_x)
         self._ball_x_space = Discrete(self.config.n_ball_x)
@@ -718,7 +771,9 @@ class Breakout(gym.Env, ABC):
         self._ball_x_speed_space = Discrete(self.config.n_ball_x_speed)
         self._ball_y_speed_space = Discrete(self.config.n_ball_y_speed)
         self._ball_dir_space = Discrete(self.config.n_ball_dir)
-        self._bricks_matrix_space = MultiBinary((self.config._brick_rows, self.config._brick_cols))
+        self._bricks_matrix_space = MultiBinary(
+            (self.config._brick_rows, self.config._brick_cols)
+        )
 
     def step(self, action: int):
         command = Command(action)
@@ -736,7 +791,7 @@ class Breakout(gym.Env, ABC):
             self.viewer.reset(self.state)
         return self.observe(self.state)
 
-    def render(self, mode='human'):
+    def render(self, mode="human"):
         if self.viewer is None:
             self.viewer = PygameViewer(self.state)
 
@@ -775,5 +830,6 @@ class Breakout(gym.Env, ABC):
                 cmd = 3
 
             _, _, done, _ = self.step(cmd)
-            if done: self.reset()
+            if done:
+                self.reset()
             self.render()

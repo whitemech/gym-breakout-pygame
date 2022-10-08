@@ -1,22 +1,44 @@
-# gym-breakout-pygame
+<h1 align="center">
+  <b>gym-breakout-pygame</b>
+</h1>
 
-[![PyPI](https://img.shields.io/pypi/v/gym_breakout_pygame)](https://pypi.org/project/gym_breakout_pygame/)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gym_breakout_pygame)
-[![](https://img.shields.io/pypi/l/gym_breakout_pygame)](https://github.com/whitemech/gym-breakout-pygame/blob/master/LICENSE)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/gym_breakout_pygame)
-![CI](https://github.com/whitemech/gym-breakout-pygame/workflows/CI/badge.svg)
-[![codecov](https://codecov.io/gh/whitemech/gym-breakout-pygame/branch/master/graph/badge.svg)](https://codecov.io/gh/whitemech/gym-breakout-pygame)
+<p align="center">
+  <a href="https://pypi.org/project/gym-breakout-pygame">
+    <img alt="PyPI" src="https://img.shields.io/pypi/v/gym-breakout-pygame">
+  </a>
+  <a href="https://pypi.org/project/gym-breakout-pygame">
+    <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/gym-breakout-pygame" />
+  </a>
+  <a href="">
+    <img alt="PyPI - Status" src="https://img.shields.io/pypi/status/gym-breakout-pygame" />
+  </a>
+  <a href="">
+    <img alt="PyPI - Implementation" src="https://img.shields.io/pypi/implementation/gym-breakout-pygame">
+  </a>
+  <a href="">
+    <img alt="PyPI - Wheel" src="https://img.shields.io/pypi/wheel/gym-breakout-pygame">
+  </a>
+  <a href="https://github.com/whitemech/gym-breakout-pygame/blob/master/LICENSE">
+    <img alt="GitHub" src="https://img.shields.io/github/license/whitemech/gym-breakout-pygame">
+  </a>
+</p>
+<p align="center">
+  <a href="">
+    <img alt="test" src="https://github.com/whitemech/gym-breakout-pygame/workflows/test/badge.svg">
+  </a>
+  <a href="">
+    <img alt="lint" src="https://github.com/whitemech/gym-breakout-pygame/workflows/lint/badge.svg">
+  </a>
+  <a href="">
+    <img alt="docs" src="https://github.com/whitemech/gym-breakout-pygame/workflows/docs/badge.svg">
+  </a>
+  <a href="https://codecov.io/gh/whitemech/gym-breakout-pygame">
+    <img alt="codecov" src="https://codecov.io/gh/whitemech/gym-breakout-pygame/branch/master/graph/badge.svg?token=FG3ATGP5P5">
+  </a>
+</p>
+
 
 Gym Breakout environment using Pygame.
-
-## Links
-
-- GitHub: [https://github.com/whitemech/gym-breakout-pygame](https://github.com/whitemech/gym-breakout-pygame)
-- PyPI: [https://pypi.org/project/gym_breakout_pygame/](https://pypi.org/project/gym_breakout_pygame/)
-- Documentation: [https://whitemech.github.io/gym-breakout-pygame](https://whitemech.github.io/gym-breakout-pygame)
-- Changelog: [https://whitemech.github.io/gym-breakout-pygame/history/](https://whitemech.github.io/gym-breakout-pygame/history/)
-- Issue Tracker:[https://github.com/whitemech/gym-breakout-pygame/issues](https://github.com/whitemech/gym-breakout-pygame/issues)
-- Download: [https://pypi.org/project/gym_breakout_pygame/#files](https://pypi.org/project/gym_breakout_pygame/#files)
 
 ## Install
 
@@ -30,6 +52,7 @@ Or, install from source:
     cd gym-breakout-pygame
     pip install .
 
+
 ## Development
 
 - clone the repo:
@@ -37,9 +60,10 @@ Or, install from source:
         git clone https://github.com/whitemech/gym-breakout-pygame.git
         cd gym-breakout-pygame
     
-- Create/activate the virtual environment:
+- Create/activate the virtual environment (using Poetry):
 
-        pipenv shell --python=python3.7
+        poetry shell
+        poetry install
     
 - Run a short demo:
 
@@ -59,17 +83,38 @@ Check for an `.mp4` file in `videos/`. You should get:
   <img width="260" height="480" src="https://raw.githubusercontent.com/whitemech/gym-breakout-pygame/develop/docs/breakout-example-fire.gif">
 </p>
 
+
 ## Tests
 
-We use `tox` for testing:
+To run tests: `tox`
 
-```
-tox -e py3.x
-```
-Replace `x` depending on the minor version of your Python interpreter. E.g.
-`tox -e py3.7`
+To run only the code tests: `tox -e py3.10`
 
-## Credits
+To run only the linters: 
+- `tox -e flake8`
+- `tox -e mypy`
+- `tox -e black-check`
+- `tox -e isort-check`
+
+Please look at the `tox.ini` file for the full list of supported commands. 
+
+## Docs
+
+To build the docs: `mkdocs build`
+
+To view documentation in a browser: `mkdocs serve`
+and then go to [http://localhost:8000](http://localhost:8000)
+
+## License
+
+gym-breakout-pygame is released under the GNU General Public License v3.0 or later (GPLv3+).
+
+Copyright 2019-2022 Marco Favorito, Luca Iocchi
+
+## Authors
+
+- [Marco Favorito](https://marcofavorito.me/)
+- [Luca Iocchi](https://github.com/iocchi)
 
 The code is largely inspired by [RLGames](https://github.com/iocchi/RLGames.git)
 

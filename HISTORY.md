@@ -1,5 +1,10 @@
 # History
 
+## 0.2.0 (2022-10-08)
+
+* Migrated to Poetry build system
+* Minor bug fixing and improvements
+
 ## 0.1.1 (2020-04-04)
 
 * Introduced fire option

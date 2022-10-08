@@ -1,0 +1,78 @@
+[tool.poetry]
+name = "gym-breakout-pygame"
+version = "0.2.0"
+description = "Gym Breakout environment using Pygame."
+authors = [
+    "Marco Favorito <favorito@diag.uniroma1.it>",
+    "Luca Iocchi <iocchi@diag.uniroma1.it>"
+]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+homepage = "https://whitemech.github.io/gym-breakout-pygame"
+repository = "https://github.com/whitemech/gym-breakout-pygame.git"
+documentation = "https://whitemech.github.io/gym-breakout-pygame"
+keywords = ["environment", "agent", "rl", "openaigym", "openai-gym", "gym", "breakout"]
+classifiers = [
+    'Development Status :: 2 - Pre-Alpha',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: MIT License',
+    'Natural Language :: English',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Topic :: Games/Entertainment :: Arcade'
+]
+#packages = []
+include = []
+
+
+#[tool.poetry.scripts]
+#script_name = 'path/to/script'
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/whitemech/gym-breakout-pygame/issues"
+"Pull Requests" = "https://github.com/whitemech/gym-breakout-pygame/pulls"
+
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.11"
+numpy = "^1.23.3"
+pygame = "^2.1.2"
+gym = "^0.26.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.1"
+pytest-cov = "^3.0.0"
+pytest-randomly = "^3.5.0"
+tox = "^3.23.0"
+codecov = "^2.1.11"
+black = "^22.3.0"
+mypy = "^0.942"
+isort = "^5.9.1"
+flake8 = "^4.0.1"
+flake8-docstrings = "^1.6.0"
+flake8-bugbear = "^22.3.23"
+flake8-eradicate = "^1.2.0"
+flake8-isort = "^4.1.1"
+pylint = "^2.13.5"
+safety = "^1.10.1"
+vulture = "^2.1"
+bandit = "^1.7.0"
+mkdocs = "^1.3.0"
+markdown_include = "^0.6.0"
+mkdocs-material = "^8.2.8"
+ipython = "^8.2.0"
+jupyter = "^1.0.0"
+mknotebooks = "^0.7.0"
+markdown = "3.3.6"
+twine = "^4.0.0"
+hypothesis = "^6.14.0"
+hypothesis-pytest = "^0.19.0"
+darglint = ">=1.8.0"
+mkdocs-bibtex = "^2.0.3"
+mkdocstrings = "^0.18.1"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
