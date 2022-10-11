@@ -32,8 +32,10 @@ Two types:
 
 from typing import Optional
 
+import gym
 import numpy as np
 from gym.spaces import Discrete, MultiDiscrete
+from numpy._typing import NDArray
 
 from gym_breakout_pygame.breakout_env import BreakoutConfiguration, BreakoutState
 from gym_breakout_pygame.utils import encode
@@ -70,9 +72,13 @@ class BreakoutNMultiDiscrete(BreakoutSkipper):
         """Compare two observations."""
         return (obs1 == obs2).all()
 
-    @classmethod
-    def observe(cls, state: BreakoutState) -> np.typing.NDarray:
+    def observe(self, state: BreakoutState) -> gym.Space:  # pylint: disable=no-self-use
         """Return a vectorized observation."""
+        return self.observe_multidiscrete(state)
+
+    @staticmethod
+    def observe_multidiscrete(state: BreakoutState) -> NDArray[np.int]:
+        """Observe from state a multidiscrete set of features."""
         paddle_x = state.paddle.x // state.config.resolution_x
         ball_x = state.ball.x // state.config.resolution_x
         ball_y = state.ball.y // state.config.resolution_y
@@ -101,10 +107,9 @@ class BreakoutNDiscrete(BreakoutSkipper):
             * self.config.n_ball_y_speed
         )
 
-    @classmethod
-    def observe(cls, state: BreakoutState) -> int:
+    def observe(self, state: BreakoutState) -> int:
         """Do an observation of the environment state."""
-        obs = list(map(int, BreakoutNMultiDiscrete.observe(state)))
+        obs = list(map(int, BreakoutNMultiDiscrete.observe_multidiscrete(state)))
         dims = [
             state.config.n_paddle_x,
             state.config.n_ball_x,

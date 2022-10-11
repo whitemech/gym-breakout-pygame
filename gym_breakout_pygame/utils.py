@@ -38,8 +38,8 @@ def encode(obs: List[int], spaces: List[int]) -> int:
     sizes = spaces
     result = obs[0]
     shift = sizes[0]
-    for o, size in list(zip(obs, sizes))[1:]:
-        result += o * shift
+    for observation, size in list(zip(obs, sizes))[1:]:
+        result += observation * shift
         shift *= size
 
     return result
@@ -59,8 +59,8 @@ def decode(obs: int, spaces: List[int]) -> List[int]:
     sizes = spaces[::-1]
     shift = reduce(lambda x, y: x * y, sizes) // sizes[0]
     for size in sizes[1:]:
-        r = obs // shift
-        result.append(r)
+        quotient = obs // shift
+        result.append(quotient)
         obs %= shift
         shift //= size
 

@@ -22,7 +22,7 @@
 #
 
 
-"""This module contains a Gym wrapper that repeats the same action until the observation does not change."""
+"""A Gym wrapper that repeats the same action until the observation does not change."""
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Tuple
 

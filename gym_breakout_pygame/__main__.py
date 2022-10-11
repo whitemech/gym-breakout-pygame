@@ -36,7 +36,7 @@ from datetime import datetime
 
 from gym.wrappers.monitoring.video_recorder import VideoRecorder
 
-from gym_breakout_pygame.breakout_env import BreakoutConfiguration
+from gym_breakout_pygame.breakout_env import Breakout, BreakoutConfiguration
 from gym_breakout_pygame.wrappers.dict_space import BreakoutDictSpace
 
 
@@ -59,14 +59,14 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _play_randomly(env):
+def _play_randomly(env: Breakout) -> None:  # pylint: disable=redefined-outer-name
     env.reset()
     env.render(mode="human")
     done = False
     while not done:
         time.sleep(0.01)
         env.render(mode="human")
-        obs, r, done, info = env.step(env.action_space.sample())  # take a random action
+        _ = env.step(env.action_space.sample())  # take a random action
     env.close()
 
 

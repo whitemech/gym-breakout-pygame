@@ -49,7 +49,7 @@ orange = [180, 100, 20]
 red = [180, 0, 0]
 
 
-class PygameDrawable(ABC):
+class PygameDrawable(ABC):  # pylint: disable=too-few-public-methods
     """Abstract base class of a drawable Pygame object."""
 
     @abstractmethod
@@ -80,7 +80,7 @@ class PygameViewer(_AbstractPygameViewer):
         """Initialize the Pygame viewer object."""
         self.state = breakout_state
 
-        pygame.init()
+        pygame.init()  # pylint: disable=no-member
         pygame.display.set_caption("Breakout")
         self.screen = pygame.display.set_mode(
             [self.state.config.win_width, self.state.config.win_height]
@@ -114,7 +114,7 @@ class PygameViewer(_AbstractPygameViewer):
         elif mode == "rgb_array":
             screen = pygame.surfarray.array3d(self.screen)
             # swap width with height
-            return screen.swapaxes(0, 1)
+            screen.swapaxes(0, 1)
 
     def _fill_screen(self) -> None:
         """Fill the screen with white color."""
@@ -123,30 +123,36 @@ class PygameViewer(_AbstractPygameViewer):
     def _draw_score_label(self) -> None:
         """Draw the score label."""
         score_label = self.myfont.render(
-            str(self.state.score), 100, pygame.color.THECOLORS["black"]
+            str(self.state.score),
+            100,
+            pygame.color.THECOLORS["black"],  # pylint: disable=c-extension-no-member
         )
         self.screen.blit(score_label, (50, 10))
 
     def _draw_last_command(self) -> None:
         """Draw the last command executed."""
         cmd = self.state.last_command
-        s = "%s" % cmd
-        count_label = self.myfont.render(s, 100, pygame.color.THECOLORS["brown"])
+        cmd_to_string = str(cmd)
+        count_label = self.myfont.render(
+            cmd_to_string,
+            100,
+            pygame.color.THECOLORS["brown"],  # pylint: disable=c-extension-no-member
+        )
         self.screen.blit(count_label, (20, 10))
 
     def _draw_game_objects(self) -> None:
         """Draw the game objects."""
-        for d in self.drawables:
-            d.draw_on_screen(self.screen)
+        for drawable in self.drawables:
+            drawable.draw_on_screen(self.screen)
 
     def close(self) -> None:
         """Close the viewer."""
         pygame.display.quit()
-        pygame.quit()
+        pygame.quit()  # pylint: disable=no-member
 
 
 @dataclasses.dataclass(frozen=True)
-class BreakoutConfiguration(object):
+class BreakoutConfiguration:  # pylint: disable=too-many-instance-attributes
     """A dataclass for the breakout configuration."""
 
     brick_rows: int = 3
@@ -251,18 +257,19 @@ class Command(Enum):
         cmd = Command(self.value)
         if cmd == Command.NOP:
             return "_"
-        elif cmd == Command.LEFT:
+        if cmd == Command.LEFT:
             return "<"
-        elif cmd == Command.RIGHT:
+        if cmd == Command.RIGHT:
             return ">"
-        elif cmd == Command.FIRE:
+        if cmd == Command.FIRE:
             return "o"
-        else:
-            raise ValueError("Shouldn't be here...")
+        raise ValueError("Shouldn't be here...")
 
 
-class Brick(PygameDrawable):
-    """Class to represent a brick Pygame object.."""
+class Brick(
+    PygameDrawable
+):  # pylint: disable=too-many-instance-attributes,too-few-public-methods
+    """Class to represent a brick Pygame object."""
 
     def __init__(
         self,
@@ -279,8 +286,10 @@ class Brick(PygameDrawable):
         self.height = height
         self.xdistance = xdistance
 
-        self.x = (self.width + self.xdistance) * i + self.xdistance
-        self.y = 70 + (self.height + 8) * j
+        self.x = (  # pylint: disable=invalid-name
+            self.width + self.xdistance
+        ) * i + self.xdistance
+        self.y = 70 + (self.height + 8) * j  # pylint: disable=invalid-name
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def draw_on_screen(self, screen: pygame.Surface) -> None:
@@ -322,8 +331,8 @@ class BrickGrid(PygameDrawable):
 
     def draw_on_screen(self, screen: pygame.Surface) -> None:
         """Draw the bricks on the screen."""
-        for b in self.bricks.values():
-            b.draw_on_screen(screen)
+        for brick in self.bricks.values():
+            brick.draw_on_screen(screen)
 
     def remove_brick_at_position(self, position: Position) -> None:
         """Remove the brick at a given position."""
@@ -345,8 +354,8 @@ class Ball(PygameDrawable):
         if breakout_config.ball_enabled:
             _initial_ball_x = self.config.win_width // 2
             _initial_ball_y = self.config.win_height - 100 - self.config.ball_radius
-            self.x: float = _initial_ball_x
-            self.y: float = _initial_ball_y
+            self.x: float = _initial_ball_x  # pylint: disable=invalid-name
+            self.y: float = _initial_ball_y  # pylint: disable=invalid-name
             self.speed_x = self.config.init_ball_speed_x
             self.speed_y = self.config.init_ball_speed_y
             self._radius = self.config.ball_radius
@@ -367,24 +376,22 @@ class Ball(PygameDrawable):
         """Get the normalized x-speed."""
         if self.speed_x < -2.5:
             return 0
-        elif -2.5 <= self.speed_x < 0:
+        if -2.5 <= self.speed_x < 0:
             return 1
-        elif self.speed_x == 0:
+        if self.speed_x == 0:
             return 2
-        elif 0 < self.speed_x < 2.5:
+        if 0 < self.speed_x < 2.5:
             return 3
-        elif 2.5 <= self.speed_x:
+        if 2.5 <= self.speed_x:
             return 4
-        else:
-            raise ValueError("Speed x not recognized.")
+        raise ValueError("Speed x not recognized.")
 
     @property
     def speed_y_norm(self) -> int:
         """Get the normalized y-speed."""
         if self.speed_y <= 0:
             return 0
-        else:
-            return 1
+        return 1
 
     @property
     def dir(self) -> int:
@@ -421,8 +428,8 @@ class Paddle(PygameDrawable):
 
         _initial_paddle_x = self.config.win_width // 2
         _initial_paddle_y = self.config.win_height - 20
-        self.x = _initial_paddle_x
-        self.y = _initial_paddle_y
+        self.x = _initial_paddle_x  # pylint: disable=invalid-name
+        self.y = _initial_paddle_y  # pylint: disable=invalid-name
 
     @property
     def width(self) -> int:
@@ -456,8 +463,7 @@ class Paddle(PygameDrawable):
         else:
             raise Exception("Command not recognized.")
 
-        if self.x < 0:
-            self.x = 0
+        self.x = max(self.x, 0)
         if self.x > self.config.win_width - self.width:
             self.x = self.config.win_width - self.width
 
@@ -469,8 +475,8 @@ class Bullet(PygameDrawable):
         """Initialize the bullet object."""
         self.config = breakout_config
 
-        self.x = 0.0
-        self.y = 0.0
+        self.x = 0.0  # pylint: disable=invalid-name
+        self.y = 0.0  # pylint: disable=invalid-name
         self.speed_y = 0.0
 
     @property
@@ -506,7 +512,7 @@ class Bullet(PygameDrawable):
             pygame.draw.rect(screen, red, [self.x, self.y, self.width, self.height], 0)
 
 
-class BreakoutState(object):
+class BreakoutState:  # pylint: disable=too-many-instance-attributes
     """Class to represent the Breakout game state."""
 
     def __init__(
@@ -570,7 +576,9 @@ class BreakoutState(object):
             "bricks_matrix": bricks_matrix,
         }
 
-    def step(self, command: Command) -> float:  # noqa: C901
+    def step(  # noqa: C901 # pylint: disable=too-many-branches,too-many-statements
+        self, command: Command
+    ) -> float:
         """
         Check collisions and update the state of the game accordingly.
 
@@ -733,8 +741,8 @@ class RandomEventGenerator:
             state.ball.speed_x = max(state.ball.speed_x, 0.5) * sign
 
 
-class Breakout(gym.Env, ABC):
-    """A generic Breakout env. The feature space must be define in subclasses."""
+class Breakout(gym.Env, ABC):  # pylint: disable=too-many-instance-attributes
+    """A generic Breakout env. The feature space must be defined in subclasses."""
 
     metadata = {"render.modes": ["human", "rgb_array"]}
 
@@ -769,7 +777,7 @@ class Breakout(gym.Env, ABC):
         info: Dict = {}
         return obs, reward, is_finished, info
 
-    def reset(self, seed: Optional[int] = None, **kwargs) -> Any:
+    def reset(self, seed: Optional[int] = None, **_kwargs) -> Any:
         """Reset the environment."""
         self.state = self.state.reset()
         if seed is not None:
@@ -808,16 +816,19 @@ class Breakout(gym.Env, ABC):
             pygame.time.wait(10)
             cmd = 0
             events = pygame.event.get()
-            for e in events:
-                if e.type == pygame.KEYDOWN and e.key == pygame.K_q:
+            for event in events:
+                if (
+                    event.type == pygame.KEYDOWN  # pylint: disable=no-member
+                    and event.key == pygame.K_q  # pylint: disable=no-member
+                ):
                     quitted = True
 
             pressed = pygame.key.get_pressed()
-            if pressed[pygame.K_LEFT]:
+            if pressed[pygame.K_LEFT]:  # pylint: disable=no-member
                 cmd = 1
-            elif pressed[pygame.K_RIGHT]:
+            elif pressed[pygame.K_RIGHT]:  # pylint: disable=no-member
                 cmd = 2
-            elif pressed[pygame.K_SPACE]:
+            elif pressed[pygame.K_SPACE]:  # pylint: disable=no-member
                 cmd = 3
 
             _, _, done, _ = self.step(cmd)
