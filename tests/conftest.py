@@ -21,35 +21,19 @@
 # SOFTWARE.
 #
 
-"""Main test module."""
+"""Conftest module for Pytest."""
+
+import os
+
 import pytest
 
-from gym_breakout_pygame.breakout_env import BreakoutConfiguration
-from gym_breakout_pygame.wrappers.dict_space import BreakoutDictSpace
-from gym_breakout_pygame.wrappers.normal_space import (
-    BreakoutNDiscrete,
-    BreakoutNMultiDiscrete,
-)
 
-
-@pytest.mark.parametrize(
-    "breakout_env_cls",
-    [
-        BreakoutNDiscrete,
-        BreakoutNMultiDiscrete,
-        BreakoutDictSpace,
-    ],
-)
-def test_random_policy(_patch_pygame_videodriver, breakout_env_cls) -> None:
-    """Execute the environment under random policy."""
-    config = BreakoutConfiguration(fire_enabled=True)
-    env = breakout_env_cls(config)
-
-    _ = env.reset()
-    env.render(mode="rgb_array")
-    done = False
-    while not done:
-        _, _, done, _ = env.step(env.action_space.sample())
-        env.render(mode="rgb_array")
-
-    env.close()
+@pytest.fixture(name="_patch_pygame_videodriver")
+def patch_pygame_videodriver():
+    """Patch the Pygame videodriver in the environment so to run without display."""
+    old_value = os.environ.pop("SDL_VIDEODRIVER", None)
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
+    yield
+    os.environ.pop("SDL_VIDEODRIVER", None)
+    if old_value is not None:
+        os.environ["SDL_VIDEODRIVER"] = old_value
