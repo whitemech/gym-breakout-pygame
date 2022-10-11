@@ -222,6 +222,8 @@ class BreakoutConfiguration(object):
 
         - ball going up (0-5) or down (6-9)
         - ball going left (1,2) straight (0) right (3,4)
+
+        :return: the total number of possible directions.
         """
         return 10
 
@@ -572,6 +574,7 @@ class BreakoutState(object):
         """
         Check collisions and update the state of the game accordingly.
 
+        :param command: the command chosen by the player
         :return: the reward resulting from this step.
         """
         reward = 0.0
