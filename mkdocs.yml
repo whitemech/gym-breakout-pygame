@@ -1,11 +1,53 @@
-site_name: Gym Breakout Pygame 
-nav:
-    - Home: index.md
-    - Release History: history.md
-    - Authors: authors.md
-    - How to contribute: contributing.md
+site_name: Gym Breakout Pygame
+repo_name: 'whitemech/gym-breakout-pygame'
+repo_url: https://github.com/whitemech/gym-breakout-pygame
 
-theme: readthedocs
+nav:
+- Home: index.md
+- Usage example: random.ipynb
+- Release History: history.md
+- Authors: authors.md
+- How to contribute: contributing.md
+
+
+plugins:
+- search
+- mknotebooks:
+    execute: false
+    write_markdown: false
+    #preamble: ""
+    #enable_default_jupyter_cell_styling: false
+    #enable_default_pandas_dataframe_styling: false
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        selection:
+          docstring_style: sphinx
+          filters:
+            - "!^_"  # exlude all members starting with _
+            - "^__init__$"  # but always include __init__ modules and methods
+    watch:
+      - gym_breakout_pygame
+
+theme:
+  name: material
+  feature:
+    tabs: true
+
+
+strict: true
+
+
 markdown_extensions:
-    - markdown_include.include:
-        base_path: docs
+- codehilite
+- pymdownx.arithmatex
+- pymdownx.superfences
+- pymdownx.highlight
+- admonition
+- markdown_include.include:
+    base_path: docs
+
+extra_javascript:
+- 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
+- 'https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'

@@ -21,4 +21,19 @@
 # SOFTWARE.
 #
 
-"""This package contains Gym environment wrappers for the Breakout environment."""
+"""Conftest module for Pytest."""
+
+import os
+
+import pytest
+
+
+@pytest.fixture(name="_patch_pygame_videodriver")
+def patch_pygame_videodriver():
+    """Patch the Pygame videodriver in the environment so to run without display."""
+    old_value = os.environ.pop("SDL_VIDEODRIVER", None)
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
+    yield
+    os.environ.pop("SDL_VIDEODRIVER", None)
+    if old_value is not None:
+        os.environ["SDL_VIDEODRIVER"] = old_value

@@ -21,4 +21,35 @@
 # SOFTWARE.
 #
 
-"""This package contains Gym environment wrappers for the Breakout environment."""
+"""Main test module."""
+import pytest
+
+from gym_breakout_pygame.breakout_env import BreakoutConfiguration
+from gym_breakout_pygame.wrappers.dict_space import BreakoutDictSpace
+from gym_breakout_pygame.wrappers.normal_space import (
+    BreakoutNDiscrete,
+    BreakoutNMultiDiscrete,
+)
+
+
+@pytest.mark.parametrize(
+    "breakout_env_cls",
+    [
+        BreakoutNDiscrete,
+        BreakoutNMultiDiscrete,
+        BreakoutDictSpace,
+    ],
+)
+def test_random_policy(_patch_pygame_videodriver, breakout_env_cls) -> None:
+    """Execute the environment under random policy."""
+    config = BreakoutConfiguration(fire_enabled=True)
+    env = breakout_env_cls(config)
+
+    _ = env.reset()
+    env.render(mode="rgb_array")
+    done = False
+    while not done:
+        _, _, done, _ = env.step(env.action_space.sample())
+        env.render(mode="rgb_array")
+
+    env.close()
