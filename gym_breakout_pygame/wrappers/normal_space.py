@@ -22,9 +22,12 @@
 #
 
 
-"""Breakout environments using a "normal" state space.
-- BreakoutNMultiDiscrete
-- BreakoutNDiscrete
+"""
+Breakout environments using a "normal" state space.
+
+Two types:
+- BreakoutNMultiDiscrete: the observation state is MultiDiscrete;
+- BreakoutNDiscrete: the observation state is Discrete.
 """
 
 from typing import Optional
@@ -32,43 +35,44 @@ from typing import Optional
 import numpy as np
 from gym.spaces import Discrete, MultiDiscrete
 
-from gym_breakout_pygame.breakout_env import (
-    Breakout,
-    BreakoutConfiguration,
-    BreakoutState,
-)
+from gym_breakout_pygame.breakout_env import BreakoutConfiguration, BreakoutState
 from gym_breakout_pygame.utils import encode
 from gym_breakout_pygame.wrappers.skipper import BreakoutSkipper
 
 
 class BreakoutNMultiDiscrete(BreakoutSkipper):
     """
+    Breakout with multi-discrete state space.
+
     Breakout env with a gym.MultiDiscrete observation space composed by:
+
     - paddle x position
     - ball x position
     - ball y position
     - ball direction
-
     """
 
-    def __init__(self, config: Optional[BreakoutConfiguration] = None):
+    def __init__(self, config: Optional[BreakoutConfiguration] = None) -> None:
+        """Initialize the environment."""
         super().__init__(config)
         self.observation_space = MultiDiscrete(
-            (
+            [
                 self._paddle_x_space.n,
                 self._ball_x_space.n,
                 self._ball_y_space.n,
                 self._ball_x_speed_space.n,
                 self._ball_y_speed_space.n,
-            )
+            ]
         )
 
     @classmethod
-    def compare(cls, obs1: np.ndarray, obs2: np.ndarray):
+    def compare(cls, obs1: np.ndarray, obs2: np.ndarray) -> bool:
+        """Compare two observations."""
         return (obs1 == obs2).all()
 
     @classmethod
-    def observe(cls, state: BreakoutState):
+    def observe(cls, state: BreakoutState) -> np.typing.NDarray:
+        """Return a vectorized observation."""
         paddle_x = state.paddle.x // state.config.resolution_x
         ball_x = state.ball.x // state.config.resolution_x
         ball_y = state.ball.y // state.config.resolution_y
@@ -81,10 +85,13 @@ class BreakoutNMultiDiscrete(BreakoutSkipper):
 
 class BreakoutNDiscrete(BreakoutSkipper):
     """
-    The same of BreakoutNMultiDiscrete, but the observation space encoded in one integer.
+    Breakout with discrete state space.
+
+    The same of BreakoutNMultiDiscrete, but the observation space encoded in only one integer.
     """
 
-    def __init__(self, config: Optional[BreakoutConfiguration] = None):
+    def __init__(self, config: Optional[BreakoutConfiguration] = None) -> None:
+        """Initialize the environment."""
         super().__init__(config)
         self.observation_space = Discrete(
             self.config.n_paddle_x
@@ -95,7 +102,8 @@ class BreakoutNDiscrete(BreakoutSkipper):
         )
 
     @classmethod
-    def observe(cls, state: BreakoutState):
+    def observe(cls, state: BreakoutState) -> int:
+        """Do an observation of the environment state."""
         obs = list(map(int, BreakoutNMultiDiscrete.observe(state)))
         dims = [
             state.config.n_paddle_x,
@@ -108,5 +116,6 @@ class BreakoutNDiscrete(BreakoutSkipper):
         return result
 
     @classmethod
-    def compare(cls, obs1, obs2):
+    def compare(cls, obs1, obs2) -> bool:
+        """Compare two observations."""
         return obs1 == obs2

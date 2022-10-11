@@ -31,7 +31,9 @@ from gym_breakout_pygame.wrappers.skipper import BreakoutSkipper
 
 
 class BreakoutDictSpace(BreakoutSkipper):
-    """A Breakout environment with a dictionary state space.
+    """
+    A Breakout environment with a dictionary state space.
+
     The components of the space are:
     - Paddle x coordinate (Discrete)
     - Ball x coordinate (Discrete)
@@ -41,7 +43,8 @@ class BreakoutDictSpace(BreakoutSkipper):
     - Brick matrix (MultiBinary)
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
+        """Initialize the environment."""
         super().__init__(*args, **kwargs)
 
         if self.config.ball_enabled:
@@ -76,5 +79,4 @@ class BreakoutDictSpace(BreakoutSkipper):
     @classmethod
     def compare(cls, obs1, obs2) -> bool:
         """Compare two observations."""
-        # return obs1 == obs2
         return False

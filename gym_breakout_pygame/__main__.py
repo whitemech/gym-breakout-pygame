@@ -29,6 +29,7 @@ Example of usage:
     python3 gym_breakout_pygame --rows 3 --columns 3 --fire --record
 
 """
+import argparse
 import time
 from argparse import ArgumentParser
 from datetime import datetime
@@ -39,7 +40,8 @@ from gym_breakout_pygame.breakout_env import BreakoutConfiguration
 from gym_breakout_pygame.wrappers.dict_space import BreakoutDictSpace
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
+    """Parse arguments."""
     parser = ArgumentParser()
     parser.add_argument("--rows", type=int, default=3, help="Number of rows")
     parser.add_argument("--columns", type=int, default=3, help="Number of columns")

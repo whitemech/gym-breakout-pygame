@@ -22,11 +22,9 @@
 #
 
 
-"""
-This module contains a Gym wrapper that repeats the same action until the observation does not change.
-"""
+"""This module contains a Gym wrapper that repeats the same action until the observation does not change."""
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 
 from gym_breakout_pygame.breakout_env import Breakout, BreakoutConfiguration
 
@@ -35,21 +33,24 @@ class BreakoutSkipper(Breakout, ABC):
     """Repeat same step until a different observation is obtained."""
 
     def __init__(self, breakout_config: Optional[BreakoutConfiguration] = None):
+        """Initialize the environment."""
         super().__init__(breakout_config)
         self._previous_obs = None  # type: Any
 
     @classmethod
     @abstractmethod
-    def compare(cls, obs1, obs2):
-        """Compare two observations"""
+    def compare(cls, obs1, obs2) -> bool:
+        """Compare two observations."""
         return False
 
-    def reset(self, **kwargs):
+    def reset(self, **kwargs) -> None:
+        """Reset the environment."""
         obs = super().reset(**kwargs)
         self._previous_obs = obs
         return obs
 
-    def step(self, action: int):
+    def step(self, action: int) -> Tuple[Any, float, bool, Any]:
+        """Do a simulation step in the environment."""
         obs, reward, is_finished, info = super().step(action)
         while self.compare(obs, self._previous_obs) and not is_finished:
             next_obs, next_reward, next_is_finished, next_info = super().step(action)

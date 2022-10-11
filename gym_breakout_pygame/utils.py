@@ -25,12 +25,11 @@
 from functools import reduce
 from typing import List
 
-from gym.spaces import Dict, Discrete
-
 
 def encode(obs: List[int], spaces: List[int]) -> int:
     """
     Encode an observation from a list of gym.Discrete spaces in one number.
+
     :param obs: an observation belonging to the state space (a list of gym.Discrete spaces)
     :param spaces: the list of gym.Discrete spaces from where the observation is observed.
     :return: the encoded observation.
@@ -49,7 +48,9 @@ def encode(obs: List[int], spaces: List[int]) -> int:
 def decode(obs: int, spaces: List[int]) -> List[int]:
     """
     Decode an observation from a list of gym.Discrete spaces in a list of integers.
+
     It assumes that obs has been encoded by using the 'utils.encode' function.
+
     :param obs: the encoded observation
     :param spaces: the list of gym.Discrete spaces from where the observation is observed.
     :return: the decoded observation.

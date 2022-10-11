@@ -20,3 +20,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+
+"""This package contains Gym environment wrappers for the Breakout environment."""
