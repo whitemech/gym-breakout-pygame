@@ -4,6 +4,7 @@ repo_url: https://github.com/whitemech/gym-breakout-pygame
 
 nav:
 - Home: index.md
+- Usage example: random.ipynb
 - Release History: history.md
 - Authors: authors.md
 - How to contribute: contributing.md
