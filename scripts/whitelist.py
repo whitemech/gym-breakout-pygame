@@ -1,3 +1,22 @@
 # flake8: noqa
 # type: ignore
 # pylint: skip-file
+black  # unused variable (gym_breakout_pygame/breakout_env.py:44)
+_.accy  # unused attribute (gym_breakout_pygame/breakout_env.py:184)
+_.dir  # unused property (gym_breakout_pygame/breakout_env.py:431)
+_.perturbate_initial_ball_speed  # unused method (gym_breakout_pygame/breakout_env.py:725)
+_.perturbate_ball_speed_after_brick_hit  # unused method (gym_breakout_pygame/breakout_env.py:731)
+metadata  # unused variable (gym_breakout_pygame/breakout_env.py:754)
+_._ball_dir_space  # unused attribute (gym_breakout_pygame/breakout_env.py:773)
+decode  # unused function (gym_breakout_pygame/utils.py:49)
+_.observation_space  # unused attribute (gym_breakout_pygame/wrappers/dict_space.py:48)
+_.observation_space  # unused attribute (gym_breakout_pygame/wrappers/dict_space.py:59)
+cls  # unused variable (gym_breakout_pygame/wrappers/dict_space.py:77)
+_.observation_space  # unused attribute (gym_breakout_pygame/wrappers/normal_space.py:56)
+cls  # unused variable (gym_breakout_pygame/wrappers/normal_space.py:67)
+cls  # unused variable (gym_breakout_pygame/wrappers/normal_space.py:71)
+BreakoutNDiscrete  # unused class (gym_breakout_pygame/wrappers/normal_space.py:82)
+_.observation_space  # unused attribute (gym_breakout_pygame/wrappers/normal_space.py:89)
+cls  # unused variable (gym_breakout_pygame/wrappers/normal_space.py:98)
+cls  # unused variable (gym_breakout_pygame/wrappers/normal_space.py:111)
+cls  # unused variable (gym_breakout_pygame/wrappers/skipper.py:43)
