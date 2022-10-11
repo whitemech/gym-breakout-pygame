@@ -43,9 +43,9 @@ class BreakoutSkipper(Breakout, ABC):
         """Compare two observations."""
         return False
 
-    def reset(self, **kwargs) -> None:
+    def reset(self, seed: Optional[int] = None, **kwargs) -> Any:
         """Reset the environment."""
-        obs = super().reset(**kwargs)
+        obs = super().reset(seed=seed, **kwargs)
         self._previous_obs = obs
         return obs
 

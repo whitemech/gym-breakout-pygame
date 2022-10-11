@@ -32,7 +32,7 @@ import math
 import random
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Dict, Optional, Set, Tuple
+from typing import Any, Dict, Optional, Set, Tuple, cast
 
 import gym
 import numpy as np
@@ -95,7 +95,7 @@ class PygameViewer(_AbstractPygameViewer):
 
     def _init_drawables(self) -> Set[PygameDrawable]:
         """Initialize the drawable objects."""
-        result = set()
+        result: Set[PygameDrawable] = set()
         result.add(self.state.ball)
         result.add(self.state.paddle)
         result.add(self.state.brick_grid)
@@ -343,14 +343,14 @@ class Ball(PygameDrawable):
         if breakout_config.ball_enabled:
             _initial_ball_x = self.config.win_width // 2
             _initial_ball_y = self.config.win_height - 100 - self.config.ball_radius
-            self.x = _initial_ball_x
-            self.y = _initial_ball_y
+            self.x: float = _initial_ball_x
+            self.y: float = _initial_ball_y
             self.speed_x = self.config.init_ball_speed_x
             self.speed_y = self.config.init_ball_speed_y
             self._radius = self.config.ball_radius
         else:
-            self.x = 0
-            self.y = 0
+            self.x = 0.0
+            self.y = 0.0
             self.speed_x = 0.0
             self.speed_y = 0.0
             self._radius = 0
@@ -527,8 +527,8 @@ class BreakoutState(object):
 
         self.bullet = Bullet(self.config)
 
-        self.last_command = Command.NOP  # type: Command
-        self.score = 0
+        self.last_command: Command = Command.NOP
+        self.score = 0.0
         self._steps = 0
 
         self._random_event_gen = (
@@ -544,7 +544,7 @@ class BreakoutState(object):
         self.paddle.update(command)
         self.ball.update()
         self.bullet.update()
-        self.last_command = str(command)
+        self.last_command = command
 
     def remove_brick_at_position(self, position: Position) -> None:
         """Remove brick at a certain position."""
@@ -568,13 +568,13 @@ class BreakoutState(object):
             "bricks_matrix": bricks_matrix,
         }
 
-    def step(self, command: Command) -> int:  # noqa: C901
+    def step(self, command: Command) -> float:  # noqa: C901
         """
         Check collisions and update the state of the game accordingly.
 
         :return: the reward resulting from this step.
         """
-        reward = 0
+        reward = 0.0
         self._steps += 1
         self.update(command)
 
@@ -676,7 +676,9 @@ class BreakoutState(object):
         )
         # time out
         reward += (
-            self.config.game_over_reward if self._steps > self.config.horizon else 0.0
+            self.config.game_over_reward
+            if self._steps > cast(int, self.config.horizon)
+            else 0.0
         )
 
         return reward
@@ -685,7 +687,7 @@ class BreakoutState(object):
         """Check whether the game is over."""
         end1 = self.ball.y > self.config.win_height - self.ball.radius
         end2 = self.brick_grid.is_empty()
-        end3 = self._steps > self.config.horizon
+        end3 = self._steps > cast(int, self.config.horizon)
         return end1 or end2 or end3
 
     def set_seed(self, seed: int) -> None:
@@ -761,10 +763,10 @@ class Breakout(gym.Env, ABC):
         reward = self.state.step(command)
         obs = self.observe(self.state)
         is_finished = self.state.is_finished()
-        info = {}
+        info: Dict = {}
         return obs, reward, is_finished, info
 
-    def reset(self, seed: Optional[int] = None, **kwargs) -> None:
+    def reset(self, seed: Optional[int] = None, **kwargs) -> Any:
         """Reset the environment."""
         self.state = self.state.reset()
         if seed is not None:
