@@ -21,8 +21,8 @@
 # SOFTWARE.
 #
 
-"""Dummy test module."""
+"""Main test module."""
 
 
-def test_dummy():
+def test_main():
     """A dummy test."""
